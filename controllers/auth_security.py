@@ -21,7 +21,7 @@ def auth_login_post():
     login = request.form.get('login')
     password = request.form.get('password')
     tuple_select = (login)
-    sql = "SELECT login, role, id_utilisateur, password FROM utilisateur WHERE login = %s"
+    sql = "SELECT login, role, utilisateur_id, password FROM utilisateur WHERE login = %s"
     retour = mycursor.execute(sql, (login))
     user = mycursor.fetchone()
     if user:
@@ -32,7 +32,7 @@ def auth_login_post():
         else:
             session['login'] = user['login']
             session['role'] = user['role']
-            session['id_user'] = user['id_utilisateur']
+            session['id_user'] = user['utilisateur_id']
             print(user['login'], user['role'])
             if user['role'] == 'ROLE_admin':
                 return redirect('/admin/commande/index')

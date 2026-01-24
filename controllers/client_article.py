@@ -14,28 +14,47 @@ def client_article_show():                                 # remplace client_ind
     mycursor = get_db().cursor()
     id_client = session['id_user']
 
-    sql = '''   selection des articles   '''
+    sql = ''' SELECT meuble_id, nom_meuble, prix_meuble, stock, photo, materiau_id, type_meuble_id
+        FROM meuble '''
     list_param = []
     condition_and = ""
     # utilisation du filtre
     sql3=''' prise en compte des commentaires et des notes dans le SQL    '''
-    articles =[]
-
+    mycursor.execute(sql)
+    articles = mycursor.fetchall()
 
     # pour le filtre
-    types_article = []
+    sql_types = '''
+        SELECT type_meuble_id, libelle_type_meuble
+        FROM type_meuble
+    '''
+    mycursor.execute(sql_types)
+    types_article = mycursor.fetchall()
 
-
-    articles_panier = []
+    sql_panier = '''
+        SELECT m.meuble_id,
+               m.nom_meuble,
+               m.prix_meuble AS prix,
+               lp.quantite,
+               (m.prix_meuble * lp.quantite) AS total_ligne
+        FROM ligne_panier lp
+        JOIN meuble m ON m.meuble_id = lp.meuble_id
+        WHERE lp.utilisateur_id = %s
+    '''
+    mycursor.execute(sql_panier, (id_client,))
+    articles_panier = mycursor.fetchall()
 
     if len(articles_panier) >= 1:
         sql = ''' calcul du prix total du panier '''
-        prix_total = None
+        prix_total = 0
+        for article in articles_panier:
+            prix_total += article['total_ligne']
     else:
         prix_total = None
+
     return render_template('client/boutique/panier_article.html'
                            , articles=articles
                            , articles_panier=articles_panier
-                           #, prix_total=prix_total
+                           , prix_total=prix_total
                            , items_filtre=types_article
                            )
