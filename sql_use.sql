@@ -1,4 +1,4 @@
-SET FOREIGN_KEY_CHECKS = 0;
+# SET FOREIGN_KEY_CHECKS = 0;
 
 DROP TABLE IF EXISTS ligne_panier;
 DROP TABLE IF EXISTS ligne_commande;
@@ -140,4 +140,5 @@ INSERT INTO ligne_commande (commande_id, meuble_id, prix, quantite) VALUES
 INSERT INTO ligne_panier (utilisateur_id, meuble_id, quantite, date_ajout) VALUES
 (3, 2, 1, '2026-01-24 09:00:00'),
 (3, 5, 1, '2026-01-24 09:05:00');
- SET FOREIGN_KEY_CHECKS = 1;
+
+# SET FOREIGN_KEY_CHECKS = 1;

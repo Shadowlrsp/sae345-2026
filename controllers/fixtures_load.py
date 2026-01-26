@@ -138,5 +138,5 @@ def fct_fixtures_load():
     mycursor.execute("SET FOREIGN_KEY_CHECKS = 1")
 
     get_db().commit()
-    print("Base de données initialisée")
+    print("base de données initialisée")
     return redirect('/')
