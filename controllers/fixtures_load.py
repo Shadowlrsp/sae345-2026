@@ -9,16 +9,14 @@ fixtures_load = Blueprint('fixtures_load', __name__,
 @fixtures_load.route('/base/init')
 def fct_fixtures_load():
     mycursor = get_db().cursor()
-    mycursor.execute("SET FOREIGN_KEY_CHECKS = 0")
-
     mycursor.execute("DROP TABLE IF EXISTS ligne_panier")
     mycursor.execute("DROP TABLE IF EXISTS ligne_commande")
     mycursor.execute("DROP TABLE IF EXISTS commande")
     mycursor.execute("DROP TABLE IF EXISTS meuble")
-    mycursor.execute("DROP TABLE IF EXISTS type_meuble")
-    mycursor.execute("DROP TABLE IF EXISTS materiau")
     mycursor.execute("DROP TABLE IF EXISTS utilisateur")
     mycursor.execute("DROP TABLE IF EXISTS etat")
+    mycursor.execute("DROP TABLE IF EXISTS type_meuble")
+    mycursor.execute("DROP TABLE IF EXISTS materiau")
 
     mycursor.execute('''
         CREATE TABLE utilisateur (
@@ -133,9 +131,6 @@ def fct_fixtures_load():
             CONSTRAINT fk_panier_meuble FOREIGN KEY (meuble_id) REFERENCES meuble(meuble_id)
         ) DEFAULT CHARSET utf8mb4;
     ''')
-
-
-    mycursor.execute("SET FOREIGN_KEY_CHECKS = 1")
 
     get_db().commit()
     print("base de données initialisée")
