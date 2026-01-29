@@ -105,7 +105,7 @@ INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marq
 ('chaise-baroque-bleu-royal', 60.00, 105.00, 189.90, 'Casa Padrino', 'Baroque Royal', 'chaise-baroque-bleu-royal.jpg', 20, 3, 1),
 ('chaises-protea', 60.00, 76.50, 229.95, 'Sklum', 'Protea', 'chaises-protea.jpg', 50, 3, 1),
 ('chaise-tallin-tissu', 66.00, 78.00, 199.95, 'Sklum', 'Tallin', 'chaise-tallin-tissu.jpg', 30, 3, 1),
-('chaise-nv-gallery-arcade', 61.00, 79.50, 279.00, 'NV Gallery', 'Arcade', 'chaise-nv-gallery-arcade.jpg', 15, 3, 1),
+('chaise-nv-gallery-arcade', 61.00, 79.50, 279.00, 'NV Gallery', 'Arcade', 'chaise-nv-gallery-arcade.png', 15, 3, 1),
 ('chaise-royal-event', 51.00, 103.00, 129.00, 'Home Luxury', 'Wedding Royal', 'chaise-royal-event.jpg', 100, 3, 1),
 ('chaise-trone-baroque-vert', 61.00, 133.00, 699.90, 'Casa Padrino', 'Trone Luxe', 'chaise-trone-baroque-vert.jpg', 5, 3, 1),
 ('chaise-baroque-gris-or', 70.00, 100.00, 399.90, 'Casa Padrino', 'Luxe Gold', 'chaise-baroque-gris-or.jpg', 10, 3, 1),
