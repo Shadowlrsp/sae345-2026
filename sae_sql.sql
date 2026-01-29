@@ -243,6 +243,7 @@ INSERT INTO ligne_commande (commande_id, meuble_id, prix, quantite) VALUES
 (1, 2, 780.0, 1),
 (7, 1, 310.49, 5),
 (10, 2, 690.0, 8),
+
 (2, 13, 115.00, 1);
 
 INSERT INTO ligne_panier (utilisateur_id, meuble_id, quantite, date_ajout) VALUES
