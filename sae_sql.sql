@@ -192,7 +192,6 @@ INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 INSERT INTO ligne_commande (commande_id, meuble_id, prix, quantite) VALUES
 (1, 1, 129.00, 4),
 (1, 6, 550.00, 1),
-(1, 6, 550.00, 1),
 (7, 15, 520.99, 10),
 (10, 9, 810.5, 2),
 (12, 9, 740.0, 8),
