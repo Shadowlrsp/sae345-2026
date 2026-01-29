@@ -58,7 +58,7 @@ def fct_fixtures_load():
             libelle_materiau VARCHAR(255) NOT NULL
         ) DEFAULT CHARSET utf8mb4;
     ''')
-    mycursor.execute("INSERT INTO materiau (id_materiau, libelle_materiau) VALUES (1, 'Chêne Massif'), (2, 'Acier Noir'), (3, 'Velours'), (4, 'Marbre Blanc');")
+    mycursor.execute("INSERT INTO materiau (libelle_materiau) VALUES ('Chêne Massif'),('Acier Noir'),('Velours'),('Marbre Blanc'),('Tissu'),('Cuir'),('Similicuir'),('Bois Massif');")
 
     mycursor.execute('''
         CREATE TABLE meuble (
@@ -78,23 +78,22 @@ def fct_fixtures_load():
         ) DEFAULT CHARSET utf8mb4;
     ''')
     mycursor.execute('''
-        INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marque, photo, stock, materiau_id, type_meuble_id) VALUES 
-        ('Chaise Royal Velours', 50.00, 85.00, 129.00, 'LuxDecor', 'Elegance', 'chaise_velours.jpg', 20, 3, 1),
-        ('Fauteuil Lounge Loft', 75.00, 70.00, 245.00, 'NordicStyle', 'Hygge', 'fauteuil_loft.jpg', 12, 3, 1),
-        ('Tabouret Industriel', 35.00, 65.00, 89.00, 'FactoryDesign', 'MetalArt', 'tabouret_indus.jpg', 15, 2, 1),
-        ('Canapé 3 places Oslo', 210.00, 80.00, 890.00, 'NordicStyle', 'Hygge', 'canape_oslo.jpg', 5, 1, 1),
-        ('Table Basse Moon', 80.00, 40.00, 199.00, 'StoneWorks', 'Mineral', 'table_basse_marbre.jpg', 8, 4, 2),
-        ('Table à manger Stockholm', 180.00, 75.00, 550.00, 'NordicStyle', 'Hygge', 'table_chene.jpg', 10, 1, 2),
-        ('Bureau d''Architecte', 140.00, 75.00, 320.00, 'FactoryDesign', 'MetalArt', 'bureau_architecte.jpg', 7, 2, 2),
-        ('Console d''entrée Slim', 100.00, 85.00, 145.00, 'LuxDecor', 'Elegance', 'console_entree.jpg', 14, 2, 2),
-        ('Buffet Scandinave', 160.00, 80.00, 480.00, 'NordicStyle', 'Hygge', 'buffet_scandi.jpg', 6, 1, 3),
-        ('Bibliothèque Murale Totem', 90.00, 190.00, 290.00, 'FactoryDesign', 'MetalArt', 'bibliotheque_totem.jpg', 9, 2, 3),
-        ('Commode 4 tiroirs Pure', 80.00, 100.00, 210.00, 'LuxDecor', 'Elegance', 'commode_blanche.jpg', 11, 1, 3),
-        ('Armoire Penderie Forest', 120.00, 200.00, 650.00, 'EcoWood', 'Nature', 'armoire_penderie.jpg', 4, 1, 3),
-        ('Lampadaire Arc Chrome', 35.00, 180.00, 115.00, 'LightUp', 'Flash', 'lampadaire_arc.jpg', 25, 2, 4),
-        ('Suspension Globe Marbre', 30.00, 30.00, 75.00, 'StoneWorks', 'Mineral', 'suspension_marbre.jpg', 30, 4, 4),
-        ('Lampe de bureau Neon', 20.00, 45.00, 49.00, 'LightUp', 'Flash', 'lampe_bureau.jpg', 18, 2, 4),
-        ('Applique Murale Laiton', 15.00, 25.00, 62.00, 'LightUp', 'Flash', 'applique_marale.jpg', 22, 2, 4);
+        INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marque, photo, stock, materiau_id, type_meuble_id) VALUES
+('chaise-baroque-bleu-royal', 60.00, 105.00, 189.90, 'Casa Padrino', 'Baroque Royal', 'chaise-baroque-bleu-royal.jpg', 20, 3, 1),
+('chaises-protea', 60.00, 76.50, 229.95, 'Sklum', 'Protea', 'chaises-protea.jpg', 50, 5, 1),
+('chaise-tallin-tissu', 66.00, 78.00, 199.95, 'Sklum', 'Tallin', 'chaise-tallin-tissu.jpg', 30, 5, 1),
+('chaise-nv-gallery-arcade', 61.00, 79.50, 279.00, 'NV Gallery', 'Arcade', 'chaise-nv-gallery-arcade.jpg', 15, 5, 1),
+('chaise-royal-event', 51.00, 103.00, 129.00, 'Home Luxury', 'Wedding Royal', 'chaise-event.jpg', 100, 5, 1),
+('chaise-trone-baroque-vert', 61.00, 133.00, 699.90, 'Casa Padrino', 'Trone Luxe', 'chaise-trone-baroque-vert.jpg', 5, 5, 1),
+('chaise-baroque-gris-or', 70.00, 100.00, 399.90, 'Casa Padrino', 'Luxe Gold', 'chaise-baroque-gris-or.jpg', 10, 5, 1),
+('chaise-chesterfield-cuir', 65.00, 108.00, 899.90, 'Casa Padrino', 'Chesterfield', 'chaise-chesterfield-cuir.jpg', 8, 5, 1),
+('chaise-luxe-marron-bois', 63.00, 76.00, 1149.90, 'Casa Padrino', 'Luxury Dining', 'chaise-luxe-marron-bois.jpg', 4, 5, 1),
+('chaise-design-creme-or', 57.00, 82.00, 2399.90, 'Casa Padrino', 'Gold Edition', 'chaise-design-creme-or.jpg', 2, 5, 1),
+('chaise-cuir-marron-fonce', 55.00, 86.00, 699.90, 'Casa Padrino', 'Dark Leather', 'chaise-cuir-marron-fonce.jpg', 12, 5, 1),
+('chaise-black-club', 48.00, 79.00, 799.90, 'Casa Padrino', 'Hotel Club', 'chaise-black-club.jpg', 20, 7, 1),
+('chaise-cuir-beige-noir', 59.00, 88.00, 899.90, 'Casa Padrino', 'Nubuck Edition', 'chaise-cuir-beige-noir.jpg', 6, 6, 1),
+('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-barock.jpg', 15, 6, 1),
+('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 6, 1);
     ''')
 
     mycursor.execute('''
