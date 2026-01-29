@@ -14,16 +14,20 @@ def client_article_show():                                 # remplace client_ind
     mycursor = get_db().cursor()
     id_client = session['id_user']
 
-    sql = ''' SELECT m.id_meuble,
-                     m.nom_meuble,
-                     m.prix_meuble,
-                     m.stock,
-                     m.photo,
-                     ma.libelle_materiau,
-                     t.libelle_type_meuble
-        FROM meuble m
-        JOIN materiau ma ON m.materiau_id = ma.id_materiau
-        JOIN type_meuble t ON m.type_meuble_id = t.id_type_meuble '''
+    sql = ''' 
+            SELECT m.id_meuble AS id_article,
+                   m.nom_meuble AS nom,
+                   m.prix_meuble AS prix,
+                   m.stock,
+                   m.photo AS image,
+                   ma.libelle_materiau,
+                   t.libelle_type_meuble
+            FROM meuble m
+            JOIN materiau ma ON m.materiau_id = ma.id_materiau
+            JOIN type_meuble t ON m.type_meuble_id = t.id_type_meuble
+        '''
+    # Note : Le GROUP BY est inutile ici car il n'y a plus de calcul de moyenne
+    # On retire le GROUP BY car il n'y a plus de fonction d'agrégation (AVG, COUNT)
     list_param = []
     condition_and = ""
     # utilisation du filtre
