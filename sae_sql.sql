@@ -102,6 +102,7 @@ INSERT INTO materiau (libelle_materiau) VALUES ('Chêne Massif'), ('Acier Noir')
 INSERT INTO type_meuble (libelle_type_meuble) VALUES ('Assises'), ('Tables'), ('Rangement'), ('Luminaires');
 
 INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marque, photo, stock, materiau_id, type_meuble_id) VALUES
+<<<<<<< HEAD
 ('Chaise Royal Velours', 50.00, 85.00, 129.00, 'LuxDecor', 'Elegance', 'chaise_velours.jpg', 20, 3, 1),
 ('Fauteuil Lounge Loft', 75.00, 70.00, 245.00, 'NordicStyle', 'Hygge', 'fauteuil_loft.jpg', 12, 3, 1),
 ('Tabouret Industriel', 35.00, 65.00, 89.00, 'FactoryDesign', 'MetalArt', 'tabouret_indus.jpg', 15, 2, 1),
@@ -118,6 +119,24 @@ INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marq
 ('Suspension Globe Marbre', 30.00, 30.00, 75.00, 'StoneWorks', 'Mineral', 'suspension_marbre.jpg', 30, 4, 4),
 ('Lampe de bureau Neon', 20.00, 45.00, 49.00, 'LightUp', 'Flash', 'lampe_bureau.jpg', 18, 2, 4),
 ('Applique Murale Laiton', 15.00, 25.00, 62.00, 'LightUp', 'Flash', 'applique_murale.jpg', 22, 2, 4);
+=======
+('chaise-baroque-bleu-royal', 60.00, 105.00, 189.90, 'Casa Padrino', 'Baroque Royal', 'chaise-baroque-bleu-royal.jpg', 20, 3, 1),
+('chaises-protea', 60.00, 76.50, 229.95, 'Sklum', 'Protea', 'chaises-protea.jpg', 50, 3, 1),
+('chaise-tallin-tissu', 66.00, 78.00, 199.95, 'Sklum', 'Tallin', 'chaise-tallin-tissu.jpg', 30, 3, 1),
+('chaise-nv-gallery-arcade', 61.00, 79.50, 279.00, 'NV Gallery', 'Arcade', 'chaise-nv-gallery-arcade.png', 15, 3, 1),
+('chaise-royal-event', 51.00, 103.00, 129.00, 'Home Luxury', 'Wedding Royal', 'chaise-royal-event.jpg', 100, 3, 1),
+('chaise-trone-baroque-vert', 61.00, 133.00, 699.90, 'Casa Padrino', 'Trone Luxe', 'chaise-trone-baroque-vert.jpg', 5, 3, 1),
+('chaise-baroque-gris-or', 70.00, 100.00, 399.90, 'Casa Padrino', 'Luxe Gold', 'chaise-baroque-gris-or.jpg', 10, 3, 1),
+('chaise-chesterfield-cuir', 65.00, 108.00, 899.90, 'Casa Padrino', 'Chesterfield', 'chaise-chesterfield-cuir.jpg', 8, 3, 1),
+('chaise-luxe-marron-bois', 63.00, 76.00, 1149.90, 'Casa Padrino', 'Luxury Dining', 'chaise-luxe-marron-bois.jpg', 4, 3, 1),
+('chaise-design-creme-or', 57.00, 82.00, 2399.90, 'Casa Padrino', 'Gold Edition', 'chaise-design-creme-or.jpg', 2, 3, 1),
+('chaise-cuir-marron-fonce', 55.00, 86.00, 699.90, 'Casa Padrino', 'Dark Leather', 'chaise-cuir-marron-fonce.jpg', 12, 3, 1),
+('chaise-black-club', 48.00, 79.00, 799.90, 'Casa Padrino', 'Hotel Club', 'chaise-black-club.jpg', 20, 3, 1),
+('chaise-cuir-beige-noir', 59.00, 88.00, 899.90, 'Casa Padrino', 'Nubuck Edition', 'chaise-cuir-beige-noir.jpg', 6, 3, 1),
+('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-baroque-floral.jpg', 15, 3, 1),
+('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 3, 1);
+
+>>>>>>> refs/remotes/origin/main
 
 INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-20 10:30:00', 2, 4),
