@@ -115,7 +115,9 @@ INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marq
 ('chaise-cuir-marron-fonce', 55.00, 86.00, 699.90, 'Casa Padrino', 'Dark Leather', 'chaise-cuir-marron-fonce.jpg', 12, 3, 1),
 ('chaise-black-club', 48.00, 79.00, 799.90, 'Casa Padrino', 'Hotel Club', 'chaise-black-club.jpg', 20, 3, 1),
 ('chaise-cuir-beige-noir', 59.00, 88.00, 899.90, 'Casa Padrino', 'Nubuck Edition', 'chaise-cuir-beige-noir.jpg', 6, 3, 1),
-('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-baroque-floral.jpg', 15, 3, 1);
+('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-baroque-floral.jpg', 15, 3, 1),
+('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 3, 1);
+
 
 INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-20 10:30:00', 2, 4),
