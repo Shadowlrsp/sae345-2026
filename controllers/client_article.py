@@ -45,7 +45,7 @@ def client_article_show():                                 # remplace client_ind
 
     sql_panier = '''
         SELECT m.id_meuble,
-               m.nom_meuble,
+               m.nom_meuble AS nom,
                m.prix_meuble AS prix,
                lp.quantite,
                (m.prix_meuble * lp.quantite) AS total_ligne

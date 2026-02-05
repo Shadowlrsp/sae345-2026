@@ -65,33 +65,24 @@ def client_panier_delete():
     # partie 2 : on supprime une déclinaison de l'article
     # id_declinaison_article = request.form.get('id_declinaison_article', None)
 
-    sql = ''' selection de la ligne du panier pour l'article et l'utilisateur connecté'''
-    article_panier=[]
+    sql = ''' SELECT * FROM ligne_panier WHERE utilisateur_id=%s AND meuble_id=%s '''
+    mycursor.execute(sql, (id_client, id_article))
+    article_panier = mycursor.fetchone()
 
-    if not(article_panier is None) and article_panier['quantite'] > 1:
-        sql = ''' mise à jour de la quantité dans le panier => -1 article '''
-    else:
-        sql = ''' suppression de la ligne de panier'''
+    if article_panier and article_panier['quantite'] > 1:
+        sql = ''' UPDATE ligne_panier SET quantite = quantite - 1 WHERE utilisateur_id=%s AND meuble_id=%s '''
+        mycursor.execute(sql, (id_client, id_article))
 
-    # mise à jour du stock de l'article disponible
+        sql = ''' UPDATE meuble SET stock = stock + 1 WHERE id_meuble=%s '''
+        mycursor.execute(sql, (id_article,))
+    elif article_panier:
+        sql = ''' DELETE FROM ligne_panier WHERE utilisateur_id=%s AND meuble_id=%s '''
+        mycursor.execute(sql, (id_client, id_article))
+
+        sql = ''' UPDATE meuble SET stock = stock + %s WHERE id_meuble=%s '''
+        mycursor.execute(sql, (article_panier['quantite'], id_article))
+
     get_db().commit()
-    return redirect('/client/article/show')
-
-
-
-
-
-@client_panier.route('/client/panier/vider', methods=['POST'])
-def client_panier_vider():
-    mycursor = get_db().cursor()
-    client_id = session['id_user']
-    sql = ''' sélection des lignes de panier'''
-    items_panier = []
-    for item in items_panier:
-        sql = ''' suppression de la ligne de panier de l'article pour l'utilisateur connecté'''
-
-        sql2=''' mise à jour du stock de l'article : stock = stock + qté de la ligne pour l'article'''
-        get_db().commit()
     return redirect('/client/article/show')
 
 
@@ -102,9 +93,34 @@ def client_panier_delete_line():
     #id_declinaison_article = request.form.get('id_declinaison_article')
 
     sql = ''' selection de ligne du panier '''
+    mycursor.execute("SELECT * FROM ligne_panier WHERE utilisateur_id=%s AND meuble_id=%s", (id_client, request.form.get('id_article','')))
+    article_panier = mycursor.fetchone()
 
-    sql = ''' suppression de la ligne du panier '''
-    sql2=''' mise à jour du stock de l'article : stock = stock + qté de la ligne pour l'article'''
+    if article_panier:
+        sql = ''' suppression de la ligne du panier '''
+        mycursor.execute("DELETE FROM ligne_panier WHERE utilisateur_id=%s AND meuble_id=%s", (id_client, request.form.get('id_article','')))
+
+        sql2=''' mise à jour du stock de l'article : stock = stock + qté de la ligne pour l'article'''
+        mycursor.execute("UPDATE meuble SET stock = stock + %s WHERE id_meuble=%s", (article_panier['quantite'], request.form.get('id_article','')))
+
+    get_db().commit()
+    return redirect('/client/article/show')
+
+
+@client_panier.route('/client/panier/vider', methods=['POST'])
+def client_panier_vider():
+    mycursor = get_db().cursor()
+    client_id = session['id_user']
+    sql = ''' sélection des lignes de panier'''
+    mycursor.execute("SELECT * FROM ligne_panier WHERE utilisateur_id=%s", (client_id,))
+    items_panier = mycursor.fetchall()
+
+    for item in items_panier:
+        sql = ''' suppression de la ligne de panier de l'article pour l'utilisateur connecté'''
+        mycursor.execute("DELETE FROM ligne_panier WHERE utilisateur_id=%s AND meuble_id=%s", (client_id, item['meuble_id']))
+
+        sql2=''' mise à jour du stock de l'article : stock = stock + qté de la ligne pour l'article'''
+        mycursor.execute("UPDATE meuble SET stock = stock + %s WHERE id_meuble=%s", (item['quantite'], item['meuble_id']))
 
     get_db().commit()
     return redirect('/client/article/show')
