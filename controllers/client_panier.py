@@ -58,7 +58,7 @@ def client_panier_add():
 def client_panier_delete():
     mycursor = get_db().cursor()
     id_client = session['id_user']
-    id_article = request.form.get('id_article','')
+    id_article = request.form.get('id_article')
     quantite = 1
 
     # ---------
@@ -69,19 +69,12 @@ def client_panier_delete():
     mycursor.execute(sql, (id_client, id_article))
     article_panier = mycursor.fetchone()
 
-    if article_panier and article_panier['quantite'] > 1:
-        sql = ''' UPDATE ligne_panier SET quantite = quantite - 1 WHERE utilisateur_id=%s AND meuble_id=%s '''
+    if not (article_panier is None) and article_panier['quantite'] > 1:
+        sql = "UPDATE ligne_panier SET quantite = quantite-%s  WHERE utilisateur_id = %s AND meuble_id=%s"
+        mycursor.execute(sql, (quantite, id_client, id_article))
+    else:
+        sql = "DELETE FROM ligne_panier WHERE utilisateur_id = %s AND meuble_id=%s"
         mycursor.execute(sql, (id_client, id_article))
-
-        sql = ''' UPDATE meuble SET stock = stock + 1 WHERE id_meuble=%s '''
-        mycursor.execute(sql, (id_article,))
-    elif article_panier:
-        sql = ''' DELETE FROM ligne_panier WHERE utilisateur_id=%s AND meuble_id=%s '''
-        mycursor.execute(sql, (id_client, id_article))
-
-        sql = ''' UPDATE meuble SET stock = stock + %s WHERE id_meuble=%s '''
-        mycursor.execute(sql, (article_panier['quantite'], id_article))
-
     get_db().commit()
     return redirect('/client/article/show')
 
