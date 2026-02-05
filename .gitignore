@@ -1,5 +1,6 @@
 .env
 __pycache__/
+controllers/__pycache__/
 *.py[cod]
 *$py.class
 venv/
