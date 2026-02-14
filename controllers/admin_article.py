@@ -47,7 +47,7 @@ def valid_add_article():
     type_article_id = request.form.get('type_article_id', '')
     prix = request.form.get('prix', '')
     stock = request.form.get('stock', 0)
-    description = request.form.get('description', '')  # Correspond à fournisseur ou marque dans ton SQL
+    description = request.form.get('description', '')
     image = request.files.get('image', '')
 
     if image:
@@ -56,7 +56,7 @@ def valid_add_article():
     else:
         filename = None
 
-    # admin_article_2 : Ajout d'un meuble (on utilise materiau_id=1 par défaut si non fourni)
+    # admin_article_2 : Ajout d'un meuble
     sql = '''INSERT INTO meuble (nom_meuble, photo, prix_meuble, type_meuble_id, fournisseur, stock, materiau_id)
              VALUES (%s, %s, %s, %s, %s, %s, 1)'''
 
