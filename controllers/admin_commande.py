@@ -19,7 +19,6 @@ def admin_index():
 def admin_commande_show():
     mycursor = get_db().cursor()
 
-    # On utilise 'login', 'date_achat' et 'libelle' sans alias pour coller à ton HTML
     sql = '''
         SELECT c.id_commande,
                u.login,

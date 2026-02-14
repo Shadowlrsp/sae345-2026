@@ -62,7 +62,6 @@ def client_article_show():  # remplace client_index
     mycursor.execute(sql, tuple(list_param))
     articles = mycursor.fetchall()
 
-    # ICI : On force les noms pour que ton HTML {{ item_filtre.id_type_article }} fonctionne
     sql_types = '''
         SELECT id_type_meuble AS id_type_article, 
                libelle_type_meuble AS libelle
