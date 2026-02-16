@@ -18,7 +18,7 @@ def admin_index():
 @admin_commande.route('/admin/commande/show', methods=['get', 'post'])
 def admin_commande_show():
     mycursor = get_db().cursor()
-
+    admin_id = session['id_user']
     sql = '''
         SELECT c.id_commande,
                u.login,
@@ -40,7 +40,7 @@ def admin_commande_show():
     articles_commande = None
     commande_adresses = None
     id_commande = request.args.get('id_commande', None)
-
+    print(id_commande)
     if id_commande != None:
         sql_articles = '''
             SELECT lc.meuble_id,
@@ -76,7 +76,8 @@ def admin_commande_valider():
     mycursor = get_db().cursor()
     commande_id = request.form.get('id_commande', None)
     if commande_id != None:
-        sql = ''' UPDATE commande SET etat_id = 2 WHERE id_commande = %s; '''
+        print(commande_id)
+        sql = ''' UPDATE commande SET etat_id = 3 WHERE id_commande = %s; '''
         mycursor.execute(sql, (commande_id,))
         get_db().commit()
         flash(u'Commande validée', 'alert-success')
