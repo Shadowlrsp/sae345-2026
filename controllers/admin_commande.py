@@ -44,10 +44,10 @@ def admin_commande_show():
     if id_commande != None:
         sql_articles = '''
             SELECT lc.meuble_id,
-                   m.nom_meuble AS nom,
-                   lc.quantite,
-                   lc.prix,
-                   (lc.prix * lc.quantite) AS total_ligne
+                m.nom_meuble AS nom,
+                lc.quantite,
+                lc.prix,
+                (lc.prix * lc.quantite) AS prix_ligne
             FROM ligne_commande lc
             JOIN meuble m ON lc.meuble_id = m.id_meuble
             WHERE lc.commande_id = %s;
