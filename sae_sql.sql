@@ -97,7 +97,7 @@ INSERT INTO utilisateur(id_utilisateur, login, email, password, role, nom, est_a
 (3,'client2','client2@client2.fr','scrypt:32768:8:1$l3UTNxiLZGuBKGkg$ae3af0d19f0d16d4a495aa633a1cd31ac5ae18f98a06ace037c0f4fb228ed86a2b6abc64262316d0dac936eb72a67ae82cd4d4e4847ee0fb0b19686ee31194b3','ROLE_client','client2',1);
 
 INSERT INTO etat (libelle) VALUES ('En attente'), ('En préparation'), ('Expédié'), ('Livré'), ('Annulé');
-INSERT INTO materiau (libelle_materiau) VALUES ('Chêne Massif'), ('Acier Noir'), ('Velours'), ('Marbre Blanc');
+INSERT INTO materiau (libelle_materiau) VALUES ('Chêne Massif'), ('Acier'), ('Velours'), ('Marbre'), ('Métal'),('Bronze'),('Laiton');
 INSERT INTO type_meuble (libelle_type_meuble) VALUES ('Assises'), ('Tables'), ('Rangement'), ('Luminaires');
 
 
@@ -117,8 +117,25 @@ INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marq
 ('chaise-black-club', 48.00, 79.00, 799.90, 'Casa Padrino', 'Hotel Club', 'chaise-black-club.jpg', 20, 3, 1),
 ('chaise-cuir-beige-noir', 59.00, 88.00, 899.90, 'Casa Padrino', 'Nubuck Edition', 'chaise-cuir-beige-noir.jpg', 6, 3, 1),
 ('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-barock.jpg', 15, 3, 1),
-('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 3, 1);
+('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 3, 1),
 
+('Tulip Oval Table à manger', 199.00, 72.00, 10302.22, 'Sahara', 'Saarinen', 'table1.jpg', 15, 2, 2), -- aluminium (acier)
+('Table à manger BLOSSOM', 180.00, 76.00, 3023.00, 'Homestorys', 'Mobitec', 'table2.jpg', 15, 1, 2), -- bois
+('Table a manger Rectangulaire', 220.00, 100.00, 1059.95, 'Masie', 'Flawas', 'table3.jpg', 15, 1, 2), -- bois/fibre verre
+('Tulip oval XL', 244.00, 72.00, 8553.19, 'Homestorys', 'Mobitec', 'table4.jpg', 15, 1, 2), -- bois
+('Table à manger DIAMANTE', 270.00, 75.00, 25498.00, 'DesignItaly', 'Sicis', 'table5.jpg', 15, 5, 2), -- verre/métal
+
+('Commode en Noir', 200.00, 73.00, 2561.00, 'Tylko', 'Tylko', 'rangement1.jpg', 15, 2, 3), -- bois
+('Rangement vinyle', 260.00, 73.00, 1840.00, 'Tylko', 'Tylko', 'rangement2.jpg', 15, 2, 3), -- bois
+('Commode noyer', 202.00, 83.00, 1761.00, 'Tylko', 'Tylko', 'rangement3.jpg', 15, 2, 3), -- bois
+('Etagère murale', 440.00, 253.00, 10659.00, 'Tylko', 'Tylko', 'rangement4.jpg', 15, 2, 3), -- bois
+('Etagère gryd', 193.00, 160.00, 1295.00, 'Tylko', 'Tylko', 'rangement5.jpg', 15, 2, 3), -- bois
+
+('Pipistrello - Terre de Sienne - Édition limitée Voltex', 55.00, 86.00, 1199.00, 'Voltex', 'Martilleni', 'lum1.jpg', 15, 2, 4), -- Acier
+('Falling sun Chandelier', 45.00, 200.00, 1805.00, 'Grau', 'Grau', 'lum2.jpg', 15, 2, 4), -- acier (alu)
+('Abeleisa Lustre', 150.00, 360.00, 14000.00, 'Neutralightning', 'Neutralightning', 'lum3.jpg', 15, 7, 4), -- laitons (alu)
+('Plotuvyn Lustre', 70.00, 150.00, 7905.00, 'Neutralightning', 'Neutralightning', 'lum4.jpg', 15, 7, 4), -- laitons (alu)
+('Avalon triple', 130.00, 102.00, 48410.00, 'Espace-Lumière', 'CTO-Lightening', 'lum5.jpg', 15, 6, 4); -- bronze (alu)
 
 INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-20 10:30:00', 2, 4),
