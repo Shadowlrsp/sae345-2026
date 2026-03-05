@@ -48,6 +48,7 @@ CREATE TABLE meuble (
   stock INT NOT NULL DEFAULT 0,
   materiau_id INT NOT NULL,
   type_meuble_id INT NOT NULL,
+  description TEXT,
   PRIMARY KEY (id_meuble)
 );
 
@@ -75,6 +76,23 @@ CREATE TABLE ligne_panier (
   PRIMARY KEY (utilisateur_id, meuble_id)
 );
 
+CREATE TABLE commentaire (
+  utilisateur_id INT NOT NULL,
+  meuble_id INT NOT NULL,
+  commentaire TEXT NOT NULL,
+  valider TINYINT(1) NOT NULL DEFAULT 0,
+  date_publication DATETIME NOT NULL,
+  PRIMARY KEY (utilisateur_id, meuble_id, date_publication)
+);
+
+CREATE TABLE note (
+  utilisateur_id INT NOT NULL,
+  meuble_id INT NOT NULL,
+  note INT NOT NULL,
+  date_note DATETIME NOT NULL,
+  PRIMARY KEY (utilisateur_id, meuble_id)
+);
+
 ALTER TABLE meuble
 ADD CONSTRAINT fk_meu_mat FOREIGN KEY (materiau_id) REFERENCES materiau(id_materiau),
 ADD CONSTRAINT fk_meu_typ FOREIGN KEY (type_meuble_id) REFERENCES type_meuble(id_type_meuble);
@@ -91,6 +109,14 @@ ALTER TABLE ligne_panier
 ADD CONSTRAINT fk_lip_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
 ADD CONSTRAINT fk_lip_meu FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
 
+ALTER TABLE commentaire
+ADD CONSTRAINT fk_com_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
+ADD CONSTRAINT fk_com_meu FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
+
+ALTER TABLE note
+ADD CONSTRAINT fk_note_utilisateur FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
+ADD CONSTRAINT fk_note_meuble FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
+
 INSERT INTO utilisateur(id_utilisateur, login, email, password, role, nom, est_actif) VALUES
 (1,'admin','admin@admin.fr','scrypt:32768:8:1$irSP6dJEjy1yXof2$56295be51bb989f467598b63ba6022405139656d6609df8a71768d42738995a21605c9acbac42058790d30fd3adaaec56df272d24bed8385e66229c81e71a4f4','ROLE_admin','admin',1),
 (2,'client','client@client.fr','scrypt:32768:8:1$iFP1d8bdBmhW6Sgc$7950bf6d2336d6c9387fb610ddaec958469d42003fdff6f8cf5a39cf37301195d2e5cad195e6f588b3644d2a9116fa1636eb400b0cb5537603035d9016c15910','ROLE_client','client',1),
@@ -102,40 +128,40 @@ INSERT INTO type_meuble (libelle_type_meuble) VALUES ('Assises'), ('Tables'), ('
 
 
 # liste meuble
-INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marque, photo, stock, materiau_id, type_meuble_id) VALUES
-('chaise-baroque-bleu-royal', 60.00, 105.00, 189.90, 'Casa Padrino', 'Baroque Royal', 'chaise-baroque-bleu-royal.jpg', 20, 3, 1),
-('chaises-protea', 60.00, 76.50, 229.95, 'Sklum', 'Protea', 'chaises-protea.jpg', 50, 3, 1),
-('chaise-tallin-tissu', 66.00, 78.00, 199.95, 'Sklum', 'Tallin', 'chaise-tallin-tissu.jpg', 30, 3, 1),
-('chaise-nv-gallery-arcade', 61.00, 79.50, 279.00, 'NV Gallery', 'Arcade', 'chaise-nv-gallery-arcade.jpg', 15, 3, 1),
-('chaise-royal-event', 51.00, 103.00, 129.00, 'Home Luxury', 'Wedding Royal', 'chaise-event.jpg', 100, 3, 1),
-('chaise-trone-baroque-vert', 61.00, 133.00, 699.90, 'Casa Padrino', 'Trone Luxe', 'chaise-trone-baroque-vert.jpg', 5, 3, 1),
-('chaise-baroque-gris-or', 70.00, 100.00, 399.90, 'Casa Padrino', 'Luxe Gold', 'chaise-baroque-gris-or.jpg', 10, 3, 1),
-('chaise-chesterfield-cuir', 65.00, 108.00, 899.90, 'Casa Padrino', 'Chesterfield', 'chaise-chesterfield-cuir.jpg', 8, 3, 1),
-('chaise-luxe-marron-bois', 63.00, 76.00, 1149.90, 'Casa Padrino', 'Luxury Dining', 'chaise-luxe-marron-bois.jpg', 4, 3, 1),
-('chaise-design-creme-or', 57.00, 82.00, 2399.90, 'Casa Padrino', 'Gold Edition', 'chaise-design-creme-or.jpg', 2, 3, 1),
-('chaise-cuir-marron-fonce', 55.00, 86.00, 699.90, 'Casa Padrino', 'Dark Leather', 'chaise-cuir-marron-fonce.jpg', 12, 3, 1),
-('chaise-black-club', 48.00, 79.00, 799.90, 'Casa Padrino', 'Hotel Club', 'chaise-black-club.jpg', 20, 3, 1),
-('chaise-cuir-beige-noir', 59.00, 88.00, 899.90, 'Casa Padrino', 'Nubuck Edition', 'chaise-cuir-beige-noir.jpg', 6, 3, 1),
-('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-barock.jpg', 15, 3, 1),
-('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 3, 1),
+INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marque, photo, stock, materiau_id, type_meuble_id,description) VALUES
+('chaise-baroque-bleu-royal', 60.00, 105.00, 189.90, 'Casa Padrino', 'Baroque Royal', 'chaise-baroque-bleu-royal.jpg', 20, 3, 1,''),
+('chaises-protea', 60.00, 76.50, 229.95, 'Sklum', 'Protea', 'chaises-protea.jpg', 50, 3, 1,''),
+('chaise-tallin-tissu', 66.00, 78.00, 199.95, 'Sklum', 'Tallin', 'chaise-tallin-tissu.jpg', 30, 3, 1,''),
+('chaise-nv-gallery-arcade', 61.00, 79.50, 279.00, 'NV Gallery', 'Arcade', 'chaise-nv-gallery-arcade.jpg', 15, 3, 1,''),
+('chaise-royal-event', 51.00, 103.00, 129.00, 'Home Luxury', 'Wedding Royal', 'chaise-event.jpg', 100, 3, 1,''),
+('chaise-trone-baroque-vert', 61.00, 133.00, 699.90, 'Casa Padrino', 'Trone Luxe', 'chaise-trone-baroque-vert.jpg', 5, 3, 1,''),
+('chaise-baroque-gris-or', 70.00, 100.00, 399.90, 'Casa Padrino', 'Luxe Gold', 'chaise-baroque-gris-or.jpg', 10, 3, 1,''),
+('chaise-chesterfield-cuir', 65.00, 108.00, 899.90, 'Casa Padrino', 'Chesterfield', 'chaise-chesterfield-cuir.jpg', 8, 3, 1,''),
+('chaise-luxe-marron-bois', 63.00, 76.00, 1149.90, 'Casa Padrino', 'Luxury Dining', 'chaise-luxe-marron-bois.jpg', 4, 3, 1,''),
+('chaise-design-creme-or', 57.00, 82.00, 2399.90, 'Casa Padrino', 'Gold Edition', 'chaise-design-creme-or.jpg', 2, 3, 1,''),
+('chaise-cuir-marron-fonce', 55.00, 86.00, 699.90, 'Casa Padrino', 'Dark Leather', 'chaise-cuir-marron-fonce.jpg', 12, 3, 1,''),
+('chaise-black-club', 48.00, 79.00, 799.90, 'Casa Padrino', 'Hotel Club', 'chaise-black-club.jpg', 20, 3, 1,''),
+('chaise-cuir-beige-noir', 59.00, 88.00, 899.90, 'Casa Padrino', 'Nubuck Edition', 'chaise-cuir-beige-noir.jpg', 6, 3, 1,''),
+('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-barock.jpg', 15, 3, 1,''),
+('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 3, 1,''),
 
-('Tulip Oval Table à manger', 199.00, 72.00, 10302.22, 'Sahara', 'Saarinen', 'table1.jpg', 15, 2, 2), -- aluminium (acier)
-('Table à manger BLOSSOM', 180.00, 76.00, 3023.00, 'Homestorys', 'Mobitec', 'table2.jpg', 15, 1, 2), -- bois
-('Table a manger Rectangulaire', 220.00, 100.00, 1059.95, 'Masie', 'Flawas', 'table3.jpg', 15, 1, 2), -- bois/fibre verre
-('Tulip oval XL', 244.00, 72.00, 8553.19, 'Homestorys', 'Mobitec', 'table4.jpg', 15, 1, 2), -- bois
-('Table à manger DIAMANTE', 270.00, 75.00, 25498.00, 'DesignItaly', 'Sicis', 'table5.jpg', 15, 5, 2), -- verre/métal
+('Tulip Oval Table à manger', 199.00, 72.00, 10302.22, 'Sahara', 'Saarinen', 'table1.jpg', 15, 2, 2,''), -- aluminium (acier)
+('Table à manger BLOSSOM', 180.00, 76.00, 3023.00, 'Homestorys', 'Mobitec', 'table2.jpg', 15, 1, 2,''), -- bois
+('Table a manger Rectangulaire', 220.00, 100.00, 1059.95, 'Masie', 'Flawas', 'table3.jpg', 15, 1, 2,''), -- bois/fibre verre
+('Tulip oval XL', 244.00, 72.00, 8553.19, 'Homestorys', 'Mobitec', 'table4.jpg', 15, 1, 2,''), -- bois
+('Table à manger DIAMANTE', 270.00, 75.00, 25498.00, 'DesignItaly', 'Sicis', 'table5.jpg', 15, 5, 2,''), -- verre/métal
 
-('Commode en Noir', 200.00, 73.00, 2561.00, 'Tylko', 'Tylko', 'rangement1.jpg', 15, 2, 3), -- bois
-('Rangement vinyle', 260.00, 73.00, 1840.00, 'Tylko', 'Tylko', 'rangement2.jpg', 15, 2, 3), -- bois
-('Commode noyer', 202.00, 83.00, 1761.00, 'Tylko', 'Tylko', 'rangement3.jpg', 15, 2, 3), -- bois
-('Etagère murale', 440.00, 253.00, 10659.00, 'Tylko', 'Tylko', 'rangement4.jpg', 15, 2, 3), -- bois
-('Etagère gryd', 193.00, 160.00, 1295.00, 'Tylko', 'Tylko', 'rangement5.jpg', 15, 2, 3), -- bois
+('Commode en Noir', 200.00, 73.00, 2561.00, 'Tylko', 'Tylko', 'rangement1.jpg', 15, 2, 3,''), -- bois
+('Rangement vinyle', 260.00, 73.00, 1840.00, 'Tylko', 'Tylko', 'rangement2.jpg', 15, 2, 3,''), -- bois
+('Commode noyer', 202.00, 83.00, 1761.00, 'Tylko', 'Tylko', 'rangement3.jpg', 15, 2, 3,''), -- bois
+('Etagère murale', 440.00, 253.00, 10659.00, 'Tylko', 'Tylko', 'rangement4.jpg', 15, 2, 3,''), -- bois
+('Etagère gryd', 193.00, 160.00, 1295.00, 'Tylko', 'Tylko', 'rangement5.jpg', 15, 2, 3,''), -- bois
 
-('Pipistrello - Terre de Sienne - Édition limitée Voltex', 55.00, 86.00, 1199.00, 'Voltex', 'Martilleni', 'lum1.jpg', 15, 2, 4), -- Acier
-('Falling sun Chandelier', 45.00, 200.00, 1805.00, 'Grau', 'Grau', 'lum2.jpg', 15, 2, 4), -- acier (alu)
-('Abeleisa Lustre', 150.00, 360.00, 14000.00, 'Neutralightning', 'Neutralightning', 'lum3.jpg', 15, 7, 4), -- laitons (alu)
-('Plotuvyn Lustre', 70.00, 150.00, 7905.00, 'Neutralightning', 'Neutralightning', 'lum4.jpg', 15, 7, 4), -- laitons (alu)
-('Avalon triple', 130.00, 102.00, 48410.00, 'Espace-Lumière', 'CTO-Lightening', 'lum5.jpg', 15, 6, 4); -- bronze (alu)
+('Pipistrello - Terre de Sienne - Édition limitée Voltex', 55.00, 86.00, 1199.00, 'Voltex', 'Martilleni', 'lum1.jpg', 15, 2, 4,''), -- Acier
+('Falling sun Chandelier', 45.00, 200.00, 1805.00, 'Grau', 'Grau', 'lum2.jpg', 15, 2, 4,''), -- acier (alu)
+('Abeleisa Lustre', 150.00, 360.00, 14000.00, 'Neutralightning', 'Neutralightning', 'lum3.jpg', 15, 7, 4,'test'), -- laitons (alu)
+('Plotuvyn Lustre', 70.00, 150.00, 7905.00, 'Neutralightning', 'Neutralightning', 'lum4.jpg', 15, 7, 4,''), -- laitons (alu)
+('Avalon triple', 130.00, 102.00, 48410.00, 'Espace-Lumière', 'CTO-Lightening', 'lum5.jpg', 15, 6, 4,''); -- bronze (alu)
 
 INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-20 10:30:00', 2, 4),
@@ -287,3 +313,6 @@ INSERT INTO ligne_panier (utilisateur_id, meuble_id, quantite, date_ajout) VALUE
 (3, 10, 3, '2026-01-8 13:37:52'),
 (3, 3, 2, '2026-01-24 16:53:00')
 ;
+
+INSERT INTO commentaire (utilisateur_id, meuble_id, commentaire, valider, date_publication)
+VALUES (2, 1, 'Superbe chaise, très confortable !', 1, '2026-03-05 10:00:00');
