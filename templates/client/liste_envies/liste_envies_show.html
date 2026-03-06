@@ -109,11 +109,11 @@ articles (tableau de dictionnaires)
 </table>
     <strong style="color: red">{{ nb_liste_envies }} article(s)</strong> <span style="color: red">dans la WishList</span><br>
     {%  if info_wishlist is defined and info_wishlist.nb_wish_list_other is defined %}
-    {%  if  info_wishlist.nb_wish_list_other > 0 %}
-        <strong style="color: green">{{ info_wishlist.nb_wish_list_other }} </strong> <span style="color: green">article(s) de nom </span>
-        <strong style="color: green"> {{ info_wishlist.nom }}</strong> <span style="color: green">dans la WishList des autres</span>
-    {% else %}
-        <span style="color: green">Vous êtes le seul à avoir cet article dans votre wishlist</span>
+        {%  if  info_wishlist.nb_wish_list_other > 0 %}
+            <strong style="color: green">{{ info_wishlist.nb_wish_list_other }} </strong> <span style="color: green">article(s) de nom </span>
+            <strong style="color: green"> {{ info_wishlist.nom }}</strong> <span style="color: green">dans la WishList des autres</span>
+        {% else %}
+            <span style="color: green">Vous êtes le seul à avoir cet article dans votre wishlist</span>
     {% endif %}
 
     <br>   <span style="color: blue">  il y a <strong>

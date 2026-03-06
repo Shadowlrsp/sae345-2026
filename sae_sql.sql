@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS liste_envie;
 DROP TABLE IF EXISTS ligne_panier;
 DROP TABLE IF EXISTS ligne_commande;
 DROP TABLE IF EXISTS commande;
@@ -73,6 +74,13 @@ CREATE TABLE ligne_panier (
   quantite INT,
   date_ajout DATETIME,
   PRIMARY KEY (utilisateur_id, meuble_id)
+);
+
+CREATE TABLE liste_envie (
+    utilisateur_id INT NOT NULL,
+    meuble_id INT NOT NULL,
+    date_envie DATETIME,
+    PRIMARY KEY (utilisateur_id, meuble_id)
 );
 
 ALTER TABLE meuble

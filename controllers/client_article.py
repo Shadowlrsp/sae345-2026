@@ -22,10 +22,13 @@ def client_article_show():  # remplace client_index
        m.photo AS image,
        ma.libelle_materiau AS libelle_materiau,
        t.libelle_type_meuble AS libelle_type_meuble,
-       t.id_type_meuble AS type_meuble_id
+       t.id_type_meuble AS type_meuble_id,
+        (w.meuble_id IS NOT NULL) AS liste_envie
        FROM meuble m
        LEFT JOIN materiau ma ON m.materiau_id = ma.id_materiau
+       LEFT JOIN liste_envie w ON m.id_meuble = w.meuble_id AND w.utilisateur_id = %s
        LEFT JOIN type_meuble t ON m.type_meuble_id = t.id_type_meuble
+        
     '''
 
     list_param = []
@@ -59,7 +62,7 @@ def client_article_show():  # remplace client_index
     # utilisation du filtre
     sql3 = ''' prise en compte des commentaires et des notes dans le SQL    '''
 
-    mycursor.execute(sql, tuple(list_param))
+    mycursor.execute(sql, tuple(str(id_client)) + tuple(list_param))
     articles = mycursor.fetchall()
 
     sql_types = '''

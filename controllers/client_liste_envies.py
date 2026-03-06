@@ -14,6 +14,8 @@ def client_liste_envies_add():
     mycursor = get_db().cursor()
     id_client = session['id_user']
     id_article = request.args.get('id_article')
+
+
     return redirect('/client/article/show')
 
 @client_liste_envies.route('/client/envie/delete', methods=['get'])
