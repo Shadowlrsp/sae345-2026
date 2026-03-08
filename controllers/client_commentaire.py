@@ -88,14 +88,23 @@ def client_article_details():
 
     sql = '''
     SELECT
-    COUNT(*) AS nb_commentaires_total,
-    SUM(CASE WHEN utilisateur_id = %s THEN 1 ELSE 0 END) AS nb_commentaires_utilisateur,
-    SUM(CASE WHEN valider = 1 THEN 1 ELSE 0 END) AS nb_commentaires_total_valide,
-    SUM(CASE WHEN utilisateur_id = %s AND valider = 1 THEN 1 ELSE 0 END) AS nb_commentaires_utilisateur_valide
-    FROM commentaire
-    WHERE meuble_id = %s
+    (SELECT COUNT(*) 
+    FROM commentaire 
+    WHERE meuble_id=%s) AS nb_commentaires_total,
+
+    (SELECT COUNT(*) 
+    FROM commentaire 
+    WHERE meuble_id=%s AND utilisateur_id=%s) AS nb_commentaires_utilisateur,
+
+    (SELECT COUNT(*) 
+    FROM commentaire 
+    WHERE meuble_id=%s AND valider=1) AS nb_commentaires_total_valide,
+
+    (SELECT COUNT(*) 
+    FROM commentaire 
+    WHERE meuble_id=%s AND utilisateur_id=%s AND valider=1) AS nb_commentaires_utilisateur_valide
     '''
-    mycursor.execute(sql, (id_client,id_client,id_article))
+    mycursor.execute(sql, (id_article, id_article, id_client, id_article, id_article, id_client))
     nb_commentaires = mycursor.fetchone()
     if nb_commentaires is None:
         nb_commentaires = {
@@ -123,6 +132,17 @@ def client_comment_add():
     commentaire = request.form.get('commentaire', None)
     id_client = session['id_user']
     id_article = request.form.get('id_article', None)
+    sql = '''
+          SELECT COUNT(*) AS nb_commentaires
+          FROM commentaire
+          WHERE utilisateur_id = %s \
+            AND meuble_id = %s \
+          '''
+    mycursor.execute(sql, (id_client, id_article))
+    nb_commentaires = mycursor.fetchone()
+    if nb_commentaires['nb_commentaires'] >= 3:
+        flash(u'Quota de 3 commentaires atteint pour cet article', 'alert-danger')
+        return redirect('/client/article/details?id_article=' + id_article)
     if commentaire == '':
         flash(u'Commentaire non prise en compte')
         return redirect('/client/article/details?id_article='+id_article)
