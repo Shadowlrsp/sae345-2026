@@ -1,12 +1,13 @@
+DROP TABLE IF EXISTS commentaire;
+DROP TABLE IF EXISTS note;
 DROP TABLE IF EXISTS ligne_panier;
 DROP TABLE IF EXISTS ligne_commande;
 DROP TABLE IF EXISTS commande;
 DROP TABLE IF EXISTS meuble;
+DROP TABLE IF EXISTS utilisateur;
 DROP TABLE IF EXISTS type_meuble;
 DROP TABLE IF EXISTS materiau;
-DROP TABLE IF EXISTS utilisateur;
 DROP TABLE IF EXISTS etat;
-
 CREATE TABLE etat (
   id_etat INT NOT NULL AUTO_INCREMENT,
   libelle VARCHAR(255) NOT NULL,
@@ -128,40 +129,40 @@ INSERT INTO type_meuble (libelle_type_meuble) VALUES ('Assises'), ('Tables'), ('
 
 
 # liste meuble
-INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marque, photo, stock, materiau_id, type_meuble_id,description) VALUES
-('chaise-baroque-bleu-royal', 60.00, 105.00, 189.90, 'Casa Padrino', 'Baroque Royal', 'chaise-baroque-bleu-royal.jpg', 20, 3, 1,''),
-('chaises-protea', 60.00, 76.50, 229.95, 'Sklum', 'Protea', 'chaises-protea.jpg', 50, 3, 1,''),
-('chaise-tallin-tissu', 66.00, 78.00, 199.95, 'Sklum', 'Tallin', 'chaise-tallin-tissu.jpg', 30, 3, 1,''),
-('chaise-nv-gallery-arcade', 61.00, 79.50, 279.00, 'NV Gallery', 'Arcade', 'chaise-nv-gallery-arcade.jpg', 15, 3, 1,''),
-('chaise-royal-event', 51.00, 103.00, 129.00, 'Home Luxury', 'Wedding Royal', 'chaise-event.jpg', 100, 3, 1,''),
-('chaise-trone-baroque-vert', 61.00, 133.00, 699.90, 'Casa Padrino', 'Trone Luxe', 'chaise-trone-baroque-vert.jpg', 5, 3, 1,''),
-('chaise-baroque-gris-or', 70.00, 100.00, 399.90, 'Casa Padrino', 'Luxe Gold', 'chaise-baroque-gris-or.jpg', 10, 3, 1,''),
-('chaise-chesterfield-cuir', 65.00, 108.00, 899.90, 'Casa Padrino', 'Chesterfield', 'chaise-chesterfield-cuir.jpg', 8, 3, 1,''),
-('chaise-luxe-marron-bois', 63.00, 76.00, 1149.90, 'Casa Padrino', 'Luxury Dining', 'chaise-luxe-marron-bois.jpg', 4, 3, 1,''),
-('chaise-design-creme-or', 57.00, 82.00, 2399.90, 'Casa Padrino', 'Gold Edition', 'chaise-design-creme-or.jpg', 2, 3, 1,''),
-('chaise-cuir-marron-fonce', 55.00, 86.00, 699.90, 'Casa Padrino', 'Dark Leather', 'chaise-cuir-marron-fonce.jpg', 12, 3, 1,''),
-('chaise-black-club', 48.00, 79.00, 799.90, 'Casa Padrino', 'Hotel Club', 'chaise-black-club.jpg', 20, 3, 1,''),
-('chaise-cuir-beige-noir', 59.00, 88.00, 899.90, 'Casa Padrino', 'Nubuck Edition', 'chaise-cuir-beige-noir.jpg', 6, 3, 1,''),
-('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-barock.jpg', 15, 3, 1,''),
-('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 3, 1,''),
+INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marque, photo, stock, materiau_id, type_meuble_id, description) VALUES
+('chaise-baroque-bleu-royal', 60.00, 105.00, 189.90, 'Casa Padrino', 'Baroque Royal', 'chaise-baroque-bleu-royal.jpg', 20, 3, 1, 'Chaise élégante au style Louis XV avec un velours bleu profond et des finitions sculptées.'),
+('chaises-protea', 60.00, 76.50, 229.95, 'Sklum', 'Protea', 'chaises-protea.jpg', 50, 3, 1, 'Assise moderne au design organique, alliant confort ergonomique et esthétique minimaliste.'),
+('chaise-tallin-tissu', 66.00, 78.00, 199.95, 'Sklum', 'Tallin', 'chaise-tallin-tissu.jpg', 30, 3, 1, 'Chaise scandinave épurée avec un revêtement en tissu doux, idéale pour un intérieur cosy.'),
+('chaise-nv-gallery-arcade', 61.00, 79.50, 279.00, 'NV Gallery', 'Arcade', 'chaise-nv-gallery-arcade.jpg', 15, 3, 1, 'Une pièce design aux lignes courbes et sophistiquées pour une salle à manger chic.'),
+('chaise-royal-event', 51.00, 103.00, 129.00, 'Home Luxury', 'Wedding Royal', 'chaise-event.jpg', 100, 3, 1, 'Chaise de réception prestigieuse, parfaite pour les mariages et événements de haut standing.'),
+('chaise-trone-baroque-vert', 61.00, 133.00, 699.90, 'Casa Padrino', 'Trone Luxe', 'chaise-trone-baroque-vert.jpg', 5, 3, 1, 'Véritable trône majestueux en bois sculpté et velours vert émeraude pour une décoration royale.'),
+('chaise-baroque-gris-or', 70.00, 100.00, 399.90, 'Casa Padrino', 'Luxe Gold', 'chaise-baroque-gris-or.jpg', 10, 3, 1, 'Alliance sublime du gris anthracite et de la dorure à la feuille pour un style opulent.'),
+('chaise-chesterfield-cuir', 65.00, 108.00, 899.90, 'Casa Padrino', 'Chesterfield', 'chaise-chesterfield-cuir.jpg', 8, 3, 1, 'L''emblématique capitonnage Chesterfield décliné en chaise de bureau ou de salle à manger.'),
+('chaise-luxe-marron-bois', 63.00, 76.00, 1149.90, 'Casa Padrino', 'Luxury Dining', 'chaise-luxe-marron-bois.jpg', 4, 3, 1, 'Artisanat d''exception en bois massif et cuir premium pour un confort inégalé.'),
+('chaise-design-creme-or', 57.00, 82.00, 2399.90, 'Casa Padrino', 'Gold Edition', 'chaise-design-creme-or.jpg', 2, 3, 1, 'Pièce de collection en édition limitée mêlant structure dorée et textile crème soyeux.'),
+('chaise-cuir-marron-fonce', 55.00, 86.00, 699.90, 'Casa Padrino', 'Dark Leather', 'chaise-cuir-marron-fonce.jpg', 12, 3, 1, 'Chaise de caractère en cuir vieilli, apportant une touche industrielle et luxueuse.'),
+('chaise-black-club', 48.00, 79.00, 799.90, 'Casa Padrino', 'Hotel Club', 'chaise-black-club.jpg', 20, 3, 1, 'Assise compacte et robuste conçue pour les salons privés et les hôtels de luxe.'),
+('chaise-cuir-beige-noir', 59.00, 88.00, 899.90, 'Casa Padrino', 'Nubuck Edition', 'chaise-cuir-beige-noir.jpg', 6, 3, 1, 'Contrastes modernes entre un cuir nubuck beige et une structure noire minimaliste.'),
+('chaise-baroque-floral', 60.00, 93.00, 199.90, 'Casa Padrino', 'Floral Edition', 'chaise-barock.jpg', 15, 3, 1, 'Motifs floraux brodés et bois blanc pour un charme romantique et printanier.'),
+('chaise-longue-rio', 60.00, 33.00, 79250.90, 'Selency', 'Niemeyer', 'chaise-longue-rio.jpg', 15, 3, 1, 'Chef-d''œuvre du design par Oscar Niemeyer, une pièce historique alliant bois et cannage.'),
 
-('Tulip Oval Table à manger', 199.00, 72.00, 10302.22, 'Sahara', 'Saarinen', 'table1.jpg', 15, 2, 2,''), -- aluminium (acier)
-('Table à manger BLOSSOM', 180.00, 76.00, 3023.00, 'Homestorys', 'Mobitec', 'table2.jpg', 15, 1, 2,''), -- bois
-('Table a manger Rectangulaire', 220.00, 100.00, 1059.95, 'Masie', 'Flawas', 'table3.jpg', 15, 1, 2,''), -- bois/fibre verre
-('Tulip oval XL', 244.00, 72.00, 8553.19, 'Homestorys', 'Mobitec', 'table4.jpg', 15, 1, 2,''), -- bois
-('Table à manger DIAMANTE', 270.00, 75.00, 25498.00, 'DesignItaly', 'Sicis', 'table5.jpg', 15, 5, 2,''), -- verre/métal
+('Tulip Oval Table à manger', 199.00, 72.00, 10302.22, 'Sahara', 'Saarinen', 'table1.jpg', 15, 2, 2, 'Icône du design du XXe siècle, cette table ovale élimine le désordre des pieds traditionnels.'),
+('Table à manger BLOSSOM', 180.00, 76.00, 3023.00, 'Homestorys', 'Mobitec', 'table2.jpg', 15, 1, 2, 'Table chaleureuse en bois massif avec des bords arrondis pour des repas conviviaux.'),
+('Table a manger Rectangulaire', 220.00, 100.00, 1059.95, 'Masie', 'Flawas', 'table3.jpg', 15, 1, 2, 'Grande table robuste en fibre de bois, parfaite pour les familles nombreuses.'),
+('Tulip oval XL', 244.00, 72.00, 8553.19, 'Homestorys', 'Mobitec', 'table4.jpg', 15, 1, 2, 'Version généreuse de la table Tulip, alliant élégance sculpturale et grande capacité.'),
+('Table à manger DIAMANTE', 270.00, 75.00, 25498.00, 'DesignItaly', 'Sicis', 'table5.jpg', 15, 5, 2, 'Luxe ultime avec un plateau en mosaïque de verre et une structure artistique unique.'),
 
-('Commode en Noir', 200.00, 73.00, 2561.00, 'Tylko', 'Tylko', 'rangement1.jpg', 15, 2, 3,''), -- bois
-('Rangement vinyle', 260.00, 73.00, 1840.00, 'Tylko', 'Tylko', 'rangement2.jpg', 15, 2, 3,''), -- bois
-('Commode noyer', 202.00, 83.00, 1761.00, 'Tylko', 'Tylko', 'rangement3.jpg', 15, 2, 3,''), -- bois
-('Etagère murale', 440.00, 253.00, 10659.00, 'Tylko', 'Tylko', 'rangement4.jpg', 15, 2, 3,''), -- bois
-('Etagère gryd', 193.00, 160.00, 1295.00, 'Tylko', 'Tylko', 'rangement5.jpg', 15, 2, 3,''), -- bois
+('Commode en Noir', 200.00, 73.00, 2561.00, 'Tylko', 'Tylko', 'rangement1.jpg', 15, 2, 3, 'Rangement modulaire aux finitions noires mates, précis au millimètre près.'),
+('Rangement vinyle', 260.00, 73.00, 1840.00, 'Tylko', 'Tylko', 'rangement2.jpg', 15, 2, 3, 'Meuble spécifiquement compartimenté pour organiser votre collection de disques vinyles.'),
+('Commode noyer', 202.00, 83.00, 1761.00, 'Tylko', 'Tylko', 'rangement3.jpg', 15, 2, 3, 'Élégance naturelle du noyer pour ce meuble de rangement spacieux et durable.'),
+('Etagère murale', 440.00, 253.00, 10659.00, 'Tylko', 'Tylko', 'rangement4.jpg', 15, 2, 3, 'Bibliothèque monumentale s''adaptant parfaitement à vos murs pour un rangement total.'),
+('Etagère gryd', 193.00, 160.00, 1295.00, 'Tylko', 'Tylko', 'rangement5.jpg', 15, 2, 3, 'Structure légère et moderne pour exposer vos objets de décoration avec style.'),
 
-('Pipistrello - Terre de Sienne - Édition limitée Voltex', 55.00, 86.00, 1199.00, 'Voltex', 'Martilleni', 'lum1.jpg', 15, 2, 4,''), -- Acier
-('Falling sun Chandelier', 45.00, 200.00, 1805.00, 'Grau', 'Grau', 'lum2.jpg', 15, 2, 4,''), -- acier (alu)
-('Abeleisa Lustre', 150.00, 360.00, 14000.00, 'Neutralightning', 'Neutralightning', 'lum3.jpg', 15, 7, 4,'test'), -- laitons (alu)
-('Plotuvyn Lustre', 70.00, 150.00, 7905.00, 'Neutralightning', 'Neutralightning', 'lum4.jpg', 15, 7, 4,''), -- laitons (alu)
-('Avalon triple', 130.00, 102.00, 48410.00, 'Espace-Lumière', 'CTO-Lightening', 'lum5.jpg', 15, 6, 4,''); -- bronze (alu)
+('Pipistrello - Terre de Sienne - Édition limitée Voltex', 55.00, 86.00, 1199.00, 'Voltex', 'Martilleni', 'lum1.jpg', 15, 2, 4, 'La célèbre lampe télescopique Gae Aulenti dans un coloris Terre de Sienne exclusif.'),
+('Falling sun Chandelier', 45.00, 200.00, 1805.00, 'Grau', 'Grau', 'lum2.jpg', 15, 2, 4, 'Suspension poétique imitant la lumière du soleil couchant pour une ambiance apaisante.'),
+('Abeleisa Lustre', 150.00, 360.00, 14000.00, 'Neutralightning', 'Neutralightning', 'lum3.jpg', 15, 7, 4, 'Lustre monumental en laiton poli, pièce maîtresse pour les grands halls d''entrée.'),
+('Plotuvyn Lustre', 70.00, 150.00, 7905.00, 'Neutralightning', 'Neutralightning', 'lum4.jpg', 15, 7, 4, 'Linaire contemporain aux finitions dorées, alliant éclairage LED et design industriel.'),
+('Avalon triple', 130.00, 102.00, 48410.00, 'Espace-Lumière', 'CTO-Lightening', 'lum5.jpg', 15, 6, 4, 'Luminaire de haute joaillerie en bronze et albâtre, diffusant une lumière chaude et tamisée.');
 
 INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-20 10:30:00', 2, 4),
