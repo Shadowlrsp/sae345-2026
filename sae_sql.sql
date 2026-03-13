@@ -88,7 +88,8 @@ CREATE TABLE liste_envie (
 CREATE TABLE historique(
    id_utilisateur INT,
    id_meuble INT,
-   date_update DATE DEFAULT NOW(),
+   date_update DATETIME DEFAULT NOW(),
+   consultations INT DEFAULT 1,
    PRIMARY KEY(id_utilisateur, id_meuble, date_update),
    FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur),
    FOREIGN KEY(id_meuble) REFERENCES meuble(id_meuble)
