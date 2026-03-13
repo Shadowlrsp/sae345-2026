@@ -45,6 +45,15 @@ def client_panier_add():
 
     get_db().commit()
     flash("Meuble ajouté au panier", "alert-success")
+
+    # ============= DEBUT HISTORIQUE =============
+    # Historique / Liste envie (Leo)
+    # On enleve de la wishlist l'article qu'on commande
+    sql = """DELETE FROM liste_envie WHERE utilisateur_id = %s AND meuble_id = %s"""
+    mycursor.execute(sql, (id_client, id_article))
+    get_db().commit()
+    # ============= FIN HISTORIQUE =============
+
     return redirect('/client/article/show')
 
 
