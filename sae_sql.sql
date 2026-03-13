@@ -80,6 +80,7 @@ CREATE TABLE liste_envie (
     utilisateur_id INT NOT NULL,
     meuble_id INT NOT NULL,
     date_envie DATETIME,
+    article_index INT DEFAULT 1,
     PRIMARY KEY (utilisateur_id, meuble_id)
 );
 
