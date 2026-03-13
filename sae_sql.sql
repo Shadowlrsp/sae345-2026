@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS historique;
 DROP TABLE IF EXISTS liste_envie;
 DROP TABLE IF EXISTS ligne_panier;
 DROP TABLE IF EXISTS ligne_commande;
@@ -84,6 +85,15 @@ CREATE TABLE liste_envie (
     PRIMARY KEY (utilisateur_id, meuble_id)
 );
 
+CREATE TABLE historique(
+   id_utilisateur INT,
+   id_meuble INT,
+   date_update DATE DEFAULT NOW(),
+   PRIMARY KEY(id_utilisateur, id_meuble, date_update),
+   FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur),
+   FOREIGN KEY(id_meuble) REFERENCES meuble(id_meuble)
+);
+
 ALTER TABLE meuble
 ADD CONSTRAINT fk_meu_mat FOREIGN KEY (materiau_id) REFERENCES materiau(id_materiau),
 ADD CONSTRAINT fk_meu_typ FOREIGN KEY (type_meuble_id) REFERENCES type_meuble(id_type_meuble);
@@ -99,6 +109,10 @@ ADD CONSTRAINT fk_lic_meu FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
 ALTER TABLE ligne_panier
 ADD CONSTRAINT fk_lip_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
 ADD CONSTRAINT fk_lip_meu FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
+
+ALTER TABLE historique
+ADD CONSTRAINT fk_hist_meu FOREIGN KEY (id_meuble) REFERENCES meuble(id_meuble),
+ADD CONSTRAINT fk_hist_uti FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur);
 
 INSERT INTO utilisateur(id_utilisateur, login, email, password, role, nom, est_actif) VALUES
 (1,'admin','admin@admin.fr','scrypt:32768:8:1$irSP6dJEjy1yXof2$56295be51bb989f467598b63ba6022405139656d6609df8a71768d42738995a21605c9acbac42058790d30fd3adaaec56df272d24bed8385e66229c81e71a4f4','ROLE_admin','admin',1),

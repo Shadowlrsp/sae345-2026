@@ -60,28 +60,64 @@ def client_liste_envies_show():
     sql = "SELECT COUNT(*) FROM liste_envie WHERE utilisateur_id = %s"
     mycursor.execute(sql, (id_client,))
     nb_liste_envies = mycursor.fetchone()
-    print(nb_liste_envies)
+
+
+
+    sql = "SELECT COUNT(*) FROM historique WHERE id_utilisateur = %s"
+    mycursor.execute(sql, (id_client,))
+    nb_historique = mycursor.fetchone()
+
+    print("NB LISTE ENVIE")
+    print(nb_liste_envies['COUNT(*)'])
     get_db().commit()
-    articles_historique = []
+
+    sql = '''SELECT *, photo as image, nom_meuble as nom, meuble.prix_meuble as prix FROM historique 
+             JOIN meuble ON meuble.id_meuble = historique.id_meuble
+             # JOIN utilisateur on historique.id_utilisateur = utilisateur.id_utilisateur
+        
+             WHERE historique.id_utilisateur = %s
+          ORDER BY historique.date_update DESC'''
+    mycursor.execute(sql, (id_client,))
+    articles_historique = mycursor.fetchall()
+    print(articles_historique)
+
     return render_template('client/liste_envies/liste_envies_show.html'
                            ,articles_liste_envies=articles_liste_envies
                            , articles_historique=articles_historique
-                           , nb_liste_envies=nb_liste_envies
+                           , nb_liste_envies=nb_liste_envies['COUNT(*)']
+                           , nb_liste_historique=nb_historique['COUNT(*)']
                            )
 
 
 
 def client_historique_add(article_id, client_id):
-    mycursor = get_db().cursor()
-    client_id = session['id_user']
     # rechercher si l'article pour cet utilisateur est dans l'historique
     # si oui mettre
-    sql ='''   '''
+    mycursor = get_db().cursor()
+
+    # debug all historique
+    sql = '''SELECT * FROM historique WHERE id_utilisateur = %s'''
+    mycursor.execute(sql, (client_id,))
+    get_db().commit()
+    result = mycursor.fetchall()
+    print(result)
+
+    sql ='''SELECT COUNT(*) FROM historique WHERE id_meuble = %s AND id_utilisateur = %s'''
     mycursor.execute(sql, (article_id, client_id))
-    historique_produit = mycursor.fetchall()
-    sql ='''   '''
-    mycursor.execute(sql, (client_id))
-    historiques = mycursor.fetchall()
+    get_db().commit()
+
+    historique_produit = mycursor.fetchone()
+    print(f'HISTORIQUE PRODUIT, id_utilisateur={client_id}, id_meuble={article_id}')
+    print(historique_produit)
+    dans_historique = historique_produit['COUNT(*)']
+    if int(dans_historique) > 0:
+        return
+
+    print("PAS DANS HISTORIQUE, ADD")
+    sql ='''INSERT INTO historique (id_utilisateur, id_meuble, date_update) VALUES (%s, %s, NOW())'''
+    mycursor.execute(sql, (client_id, article_id))
+    get_db().commit()
+    # historiques = mycursor.fetchall()
 
 
 # @client_liste_envies.route('/client/envies/up', methods=['get'])

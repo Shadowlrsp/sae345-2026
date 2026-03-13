@@ -18,7 +18,8 @@ def client_article_details():
     id_client = session['id_user']
 
     ## partie 4
-    # client_historique_add(id_article, id_client)
+    # TODO : Historique (Leo K.)
+    client_historique_add(id_article, id_client)
 
     sql = '''
     '''
