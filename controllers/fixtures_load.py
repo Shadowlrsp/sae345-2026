@@ -135,6 +135,26 @@ def fct_fixtures_load():
         ) DEFAULT CHARSET utf8mb4;
     ''')
 
+    mycursor.execute('''
+        CREATE TABLE liste_envie (
+        utilisateur_id INT NOT NULL,
+        meuble_id INT NOT NULL,
+        date_envie DATETIME,
+        article_index INT DEFAULT 1,
+        PRIMARY KEY (utilisateur_id, meuble_id));
+ ''')
+
+    mycursor.execute('''
+    CREATE TABLE historique(
+   id_utilisateur INT,
+   id_meuble INT,
+   date_update DATETIME DEFAULT NOW(),
+   consultations INT DEFAULT 1,
+   PRIMARY KEY(id_utilisateur, id_meuble, date_update),
+   FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur),
+   FOREIGN KEY(id_meuble) REFERENCES meuble(id_meuble));
+''')
+
     get_db().commit()
     print("base de données initialisée")
     return redirect('/')
