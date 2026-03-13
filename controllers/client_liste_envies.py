@@ -101,6 +101,7 @@ def client_historique_add(article_id, client_id):
     get_db().commit()
     result = mycursor.fetchall()
     print(result)
+    print("Total historique: " + str(len(result)))
 
     sql ='''SELECT COUNT(*) FROM historique WHERE id_meuble = %s AND id_utilisateur = %s'''
     mycursor.execute(sql, (article_id, client_id))
@@ -110,7 +111,37 @@ def client_historique_add(article_id, client_id):
     print(f'HISTORIQUE PRODUIT, id_utilisateur={client_id}, id_meuble={article_id}')
     print(historique_produit)
     dans_historique = historique_produit['COUNT(*)']
+
+    # Enleve si plus d'1 mois
+    sql = '''DELETE FROM historique
+            WHERE date_update < NOW() - INTERVAL 1 MONTH;'''
+    mycursor.execute(sql)
+    get_db().commit()
+
+    # Check si c'est au dessus de 6
+    # Enleve le plus ancien si y'en a plus de six
+    # On delete toutes les entrees pas trouvees dans la sous-querry qui est limite par 5 (6 laissait un 7eme article etre ajoute a l'historique)
+    # Ca supprime donc effectivement tout sauf les six derniers elements
+    # https://www.mariadbtutorial.com/mariadb-basics/mariadb-subqueries/
+    sql = """DELETE FROM historique
+            WHERE id_utilisateur = %s
+            AND (id_utilisateur, id_meuble, date_update) NOT IN (
+                SELECT id_utilisateur, id_meuble, date_update
+                FROM (
+                    SELECT id_utilisateur, id_meuble, date_update
+                    FROM historique
+                    WHERE id_utilisateur = %s
+                    ORDER BY date_update DESC
+                    LIMIT 5
+                ) AS t
+            );"""
+    mycursor.execute(sql, (client_id, client_id))
+    get_db().commit()
+
     if int(dans_historique) > 0:
+        sql = '''UPDATE historique SET consultations = consultations + 1 WHERE id_utilisateur = %s AND id_meuble = %s'''
+        mycursor.execute(sql, (client_id, article_id))
+        get_db().commit()
         return
 
     print("PAS DANS HISTORIQUE, ADD")
