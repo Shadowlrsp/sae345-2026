@@ -315,5 +315,76 @@ INSERT INTO ligne_panier (utilisateur_id, meuble_id, quantite, date_ajout) VALUE
 (3, 3, 2, '2026-01-24 16:53:00')
 ;
 
-INSERT INTO commentaire (utilisateur_id, meuble_id, commentaire, valider, date_publication)
-VALUES (2, 1, 'Superbe chaise, très confortable !', 1, '2026-03-05 10:00:00');
+###################
+### Partie 2 Lecoq Brian
+###################
+INSERT INTO note (utilisateur_id, meuble_id, note, date_note) VALUES
+(2,1,5,'2026-03-01 10:00:00'),
+(3,1,4,'2026-03-01 11:00:00'),
+(2,2,4,'2026-03-02 10:00:00'),
+(3,2,3,'2026-03-02 11:00:00'),
+(2,3,5,'2026-03-03 10:00:00'),
+(3,3,4,'2026-03-03 11:00:00'),
+(2,16,5,'2026-03-04 10:00:00'),
+(3,16,4,'2026-03-04 11:00:00'),
+(2,17,3,'2026-03-04 12:00:00'),
+(3,17,4,'2026-03-04 13:00:00'),
+(2,21,5,'2026-03-04 14:00:00'),
+(3,21,4,'2026-03-04 15:00:00'),
+(2,26,4,'2026-03-04 16:00:00'),
+(3,26,5,'2026-03-04 17:00:00'),
+(2, 4, 5, '2026-03-08 09:15:00'),
+(3, 4, 4, '2026-03-08 10:20:00'),
+(2, 5, 3, '2026-03-08 14:00:00'),
+(3, 5, 4, '2026-03-08 15:30:00'),
+(2, 6, 5, '2026-03-09 11:00:00'),
+(3, 6, 5, '2026-03-09 12:45:00'),
+(2, 7, 4, '2026-03-10 08:00:00'),
+(3, 7, 4, '2026-03-10 09:12:00'),
+(2, 8, 5, '2026-03-10 16:20:00'),
+(3, 15, 5, '2026-03-11 10:00:00'),
+(2, 18, 4, '2026-03-11 14:20:00'),
+(3, 18, 2, '2026-03-11 15:10:00'),
+(2, 19, 5, '2026-03-12 09:00:00'),
+(3, 20, 5, '2026-03-12 11:30:00'),
+(2, 22, 4, '2026-03-13 10:00:00'),
+(3, 23, 5, '2026-03-13 14:00:00'),
+(2, 24, 5, '2026-03-13 16:45:00'),
+(3, 25, 3, '2026-03-14 09:20:00'),
+(2, 27, 4, '2026-03-14 11:00:00'),
+(3, 28, 5, '2026-03-14 13:15:00'),
+(2, 29, 5, '2026-03-14 15:00:00'),
+(3, 30, 4, '2026-03-14 17:30:00');
+
+INSERT INTO commentaire (utilisateur_id, meuble_id, commentaire, valider, date_publication) VALUES
+(2,1,'Chaise très confortable et élégante',1,'2026-03-05 10:00:00'),
+(3,1,'Bon rapport qualité prix',1,'2026-03-05 11:00:00'),
+(2,2,'Design moderne très réussi',1,'2026-03-06 10:00:00'),
+(3,2,'Un peu chère mais belle finition',1,'2026-03-06 11:00:00'),
+(2,3,'Parfaite pour salle à manger',1,'2026-03-06 12:00:00'),
+(2,16,'Table magnifique pour recevoir',1,'2026-03-07 10:00:00'),
+(3,16,'Grande et solide',1,'2026-03-07 11:00:00'),
+(2,21,'Très bon meuble de rangement',1,'2026-03-07 12:00:00'),
+(3,21,'Pratique et esthétique',1,'2026-03-07 13:00:00'),
+(2,26,'Lampe superbe dans le salon',1,'2026-03-07 14:00:00'),
+(3,26,'Très belle lumière',1,'2026-03-07 15:00:00'),
+(2, 4, 'Lignes magnifiques, elle fait un effet fou dans mon salon.', 1, '2026-03-08 09:20:00'),
+(3, 5, 'Idéale pour les grandes réceptions, très stable.', 1, '2026-03-08 15:45:00'),
+(2, 6, 'Un vrai trône ! La couleur verte est encore plus belle en vrai.', 1, '2026-03-09 11:10:00'),
+(3, 7, 'Le mélange gris et or est très classe, montage facile.', 1, '2026-03-10 09:30:00'),
+(2, 8, 'Le cuir est de super qualité, on sent que c''est du solide.', 1, '2026-03-10 16:30:00'),
+(3, 15, 'Une pièce de collection. Le prix est élevé mais le design est intemporel.', 1, '2026-03-11 10:05:00'),
+(3, 18, 'Un peu déçu par la couleur du bois par rapport à la photo.', 1, '2026-03-11 15:20:00'),
+(2, 19, 'Très spacieuse, on tient facilement à 8 personnes.', 1, '2026-03-12 09:15:00'),
+(3, 20, 'Le plateau en mosaïque est une œuvre d''art. Livraison très soignée.', 1, '2026-03-12 11:45:00'),
+(2, 22, 'Enfin un meuble adapté pour mes vinyles, les cases sont parfaites.', 1, '2026-03-13 10:15:00'),
+(3, 23, 'Le noyer apporte beaucoup de chaleur à la pièce.', 1, '2026-03-13 14:10:00'),
+(2, 24, 'Immense ! J''ai pu ranger toute ma bibliothèque.', 1, '2026-03-13 17:00:00'),
+(3, 25, 'Design sympa mais un peu long à monter seul.', 1, '2026-03-14 09:40:00'),
+(2, 27, 'L''effet coucher de soleil est magique le soir.', 1, '2026-03-14 11:15:00'),
+(3, 28, 'Majestueux. Installé dans l''entrée, il impressionne tous mes invités.', 1, '2026-03-14 13:30:00'),
+(2, 29, 'Style industriel chic, l''éclairage LED est puissant mais agréable.', 1, '2026-03-14 15:15:00'),
+(3, 30, 'Lumière très douce, parfait pour une ambiance tamisée.', 1, '2026-03-14 17:45:00');
+
+######################
+######################

@@ -4,7 +4,7 @@
 from flask import Flask, request, render_template, redirect, url_for, abort, flash, session, g
 from flask import Blueprint
 
-
+from controllers.admin_dataviz_commentaires import admin_dataviz_commentaire
 from controllers.auth_security import *
 from controllers.fixtures_load import *
 
@@ -81,7 +81,7 @@ app.register_blueprint(admin_commande)
 app.register_blueprint(admin_type_article)
 app.register_blueprint(admin_dataviz)
 app.register_blueprint(admin_commentaire)
-
+app.register_blueprint(admin_dataviz_commentaire)
 
 if __name__ == '__main__':
     app.run()

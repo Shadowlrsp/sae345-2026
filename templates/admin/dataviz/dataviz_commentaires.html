@@ -1,0 +1,111 @@
+{% extends 'admin/layout_admin.html' %}
+
+{% block title %}
+    <title>Visualisation des commentaires</title>
+{% endblock %}
+
+{% block javascripts_head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-4">
+    <h2>Visualisation des commentaires et notes par type d'article</h2>
+
+    <form method="get" action="{{ url_for('admin_dataviz_commentaire.dataviz_commentaires') }}" class="mb-4">
+        <label for="type_meuble_id" class="form-label">Choisir un type d'article :</label>
+        <select class="form-select w-25" name="type_meuble_id" id="type_meuble_id" onchange="this.form.submit()">
+            <option value="">-- Tous les types --</option>
+            {% for type in types_meubles %}
+                <option value="{{ type.id_type_meuble }}"
+                    {% if request.args.get('type_meuble_id') == type.id_type_meuble|string %} selected {% endif %}>
+                    {{ type.libelle_type_meuble }}
+                </option>
+            {% endfor %}
+        </select>
+    </form>
+
+    {% if datas %}
+    <h4>Tableau des meubles</h4>
+    <table class="table table-bordered table-striped">
+        <thead class="thead-dark">
+            <tr>
+                <th>Nom du meuble</th>
+                <th>Nombre de notes</th>
+                <th>Note moyenne</th>
+                <th>Nombre de commentaires</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in datas %}
+            <tr>
+                <td>{{ row.nom_meuble }}</td>
+                <td>{{ row.nb_notes }}</td>
+                <td>{{ row.moyenne_note if row.moyenne_note else 0 }}</td>
+                <td>{{ row.nb_commentaires }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4>Graphiques</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <canvas id="chartNotes"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="chartCommentaires"></canvas>
+        </div>
+    </div>
+
+    <script>
+    // Configuration commune pour forcer le zéro
+    var commonOptions = {
+        responsive: true,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    };
+
+    var ctxNotes = document.getElementById('chartNotes').getContext('2d');
+    var chartNotes = new Chart(ctxNotes, {
+        type: 'bar',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [{
+                label: 'Nombre de notes',
+                data: {{ values_notes|safe }},
+                backgroundColor: '#3e95cd'
+            }, {
+                label: 'Note moyenne',
+                data: {{ values_moyennes|safe }},
+                backgroundColor: '#8e5ea2'
+            }]
+        },
+        options: commonOptions // Utilise les options avec beginAtZero
+    });
+
+    var ctxComms = document.getElementById('chartCommentaires').getContext('2d');
+    var chartComms = new Chart(ctxComms, {
+        type: 'bar',
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [{
+                label: 'Nombre de commentaires',
+                data: {{ values_commentaires|safe }},
+                backgroundColor: '#c45850'
+            }]
+        },
+        options: commonOptions // Utilise les options avec beginAtZero
+    });
+</script>
+
+    {% else %}
+        <p class="alert alert-warning">Aucun meuble trouvé pour ce type.</p>
+    {% endif %}
+</div>
+{% endblock %}
