@@ -1,13 +1,21 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS commentaire;
 DROP TABLE IF EXISTS note;
+DROP TABLE IF EXISTS declinaison_meuble;
 DROP TABLE IF EXISTS ligne_panier;
 DROP TABLE IF EXISTS ligne_commande;
+DROP TABLE IF EXISTS couleur;
+DROP TABLE IF EXISTS taille;
 DROP TABLE IF EXISTS commande;
 DROP TABLE IF EXISTS meuble;
 DROP TABLE IF EXISTS utilisateur;
 DROP TABLE IF EXISTS type_meuble;
 DROP TABLE IF EXISTS materiau;
 DROP TABLE IF EXISTS etat;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
 CREATE TABLE etat (
   id_etat INT NOT NULL AUTO_INCREMENT,
   libelle VARCHAR(255) NOT NULL,
@@ -47,8 +55,8 @@ CREATE TABLE meuble (
   marque VARCHAR(255),
   photo VARCHAR(255),
   stock INT NOT NULL DEFAULT 0,
-  materiau_id INT NOT NULL,
   type_meuble_id INT NOT NULL,
+  materiau_id INT NOT NULL,
   description TEXT,
   PRIMARY KEY (id_meuble)
 );
@@ -77,6 +85,20 @@ CREATE TABLE ligne_panier (
   PRIMARY KEY (utilisateur_id, meuble_id)
 );
 
+CREATE TABLE couleur (
+  id_couleur INT NOT NULL AUTO_INCREMENT,
+  libelle_couleur VARCHAR(255),
+  code_couleur VARCHAR(255),
+  PRIMARY KEY (id_couleur)
+);
+
+CREATE TABLE taille (
+  id_taille INT NOT NULL AUTO_INCREMENT,
+  libelle_taille VARCHAR(255),
+  code_taille VARCHAR(255),
+  PRIMARY KEY (id_taille)
+);
+
 CREATE TABLE commentaire (
   utilisateur_id INT NOT NULL,
   meuble_id INT NOT NULL,
@@ -94,9 +116,21 @@ CREATE TABLE note (
   PRIMARY KEY (utilisateur_id, meuble_id)
 );
 
+CREATE TABLE declinaison_meuble (
+  id_declinaison_meuble INT NOT NULL AUTO_INCREMENT,
+  stock INT,
+  prix_declinaison DECIMAL(10,2),
+  image_declinaison VARCHAR(255),
+  couleur_id INT NOT NULL,
+  taille_id INT NOT NULL,
+  meuble_id INT NOT NULL,
+  PRIMARY KEY (id_declinaison_meuble)
+);
+
 ALTER TABLE meuble
-ADD CONSTRAINT fk_meu_mat FOREIGN KEY (materiau_id) REFERENCES materiau(id_materiau),
 ADD CONSTRAINT fk_meu_typ FOREIGN KEY (type_meuble_id) REFERENCES type_meuble(id_type_meuble);
+
+ADD CONSTRAINT fk_meu_mat FOREIGN KEY (materiau_id) REFERENCES materiau(id_materiau),
 
 ALTER TABLE commande
 ADD CONSTRAINT fk_cmd_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
@@ -104,11 +138,11 @@ ADD CONSTRAINT fk_cmd_eta FOREIGN KEY (etat_id) REFERENCES etat(id_etat);
 
 ALTER TABLE ligne_commande
 ADD CONSTRAINT fk_lic_cmd FOREIGN KEY (commande_id) REFERENCES commande(id_commande),
-ADD CONSTRAINT fk_lic_meu FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
+ADD CONSTRAINT fk_lic_meu FOREIGN KEY (meuble_id) REFERENCES declinaison_meuble(id_declinaison_meuble);
 
 ALTER TABLE ligne_panier
 ADD CONSTRAINT fk_lip_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
-ADD CONSTRAINT fk_lip_meu FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
+ADD CONSTRAINT fk_lip_meu FOREIGN KEY (meuble_id) REFERENCES declinaison_meuble(id_declinaison_meuble);
 
 ALTER TABLE commentaire
 ADD CONSTRAINT fk_com_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
@@ -116,7 +150,12 @@ ADD CONSTRAINT fk_com_meu FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
 
 ALTER TABLE note
 ADD CONSTRAINT fk_note_utilisateur FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
-ADD CONSTRAINT fk_note_meuble FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
+ADD CONSTRAINT fk_note_meuble FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble); 
+
+ALTER TABLE declinaison_meuble
+ADD CONSTRAINT fk_meu_decli_couleur FOREIGN KEY (couleur_id) REFERENCES couleur(id_couleur),
+ADD CONSTRAINT fk_meu_decli_taille FOREIGN KEY (taille_id) REFERENCES taille(id_taille),
+ADD CONSTRAINT fk_meu_decli_meu FOREIGN KEY (meuble_id) REFERENCES meuble(id_meuble);
 
 INSERT INTO utilisateur(id_utilisateur, login, email, password, role, nom, est_actif) VALUES
 (1,'admin','admin@admin.fr','scrypt:32768:8:1$irSP6dJEjy1yXof2$56295be51bb989f467598b63ba6022405139656d6609df8a71768d42738995a21605c9acbac42058790d30fd3adaaec56df272d24bed8385e66229c81e71a4f4','ROLE_admin','admin',1),
@@ -163,6 +202,39 @@ INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marq
 ('Abeleisa Lustre', 150.00, 360.00, 14000.00, 'Neutralightning', 'Neutralightning', 'lum3.jpg', 15, 7, 4, 'Lustre monumental en laiton poli, pièce maîtresse pour les grands halls d''entrée.'),
 ('Plotuvyn Lustre', 70.00, 150.00, 7905.00, 'Neutralightning', 'Neutralightning', 'lum4.jpg', 15, 7, 4, 'Linaire contemporain aux finitions dorées, alliant éclairage LED et design industriel.'),
 ('Avalon triple', 130.00, 102.00, 48410.00, 'Espace-Lumière', 'CTO-Lightening', 'lum5.jpg', 15, 6, 4, 'Luminaire de haute joaillerie en bronze et albâtre, diffusant une lumière chaude et tamisée.');
+
+INSERT INTO couleur (libelle_couleur, code_couleur) VALUES 
+('Bleu Royal', '#002366'),
+('Vert Émeraude', '#50C878'),
+('Gris Anthracite', '#383E42'),
+('Or', '#D4AF37'),
+('Noir Mat', '#28282B'),
+('Crème', '#FFFDD0'),
+('Terre de Sienne', '#A0522D'),
+('Noyer', '#5D3922');
+
+INSERT INTO taille (libelle_taille, code_taille) VALUES 
+('Standard', 'S'),
+('Large', 'L'),
+('XL', 'XL'),
+('Unique', 'U');
+
+INSERT INTO declinaison_meuble (id_declinaison_meuble, stock, prix_declinaison, image_declinaison, couleur_id, taille_id, meuble_id) VALUES
+(1, 20, 189.90, 'chaise-baroque-bleu-royal.jpg', 1, 1, 1),
+(2, 50, 229.95, 'chaises-protea.jpg', 6, 1, 2),
+(3, 30, 199.95, 'chaise-tallin-tissu.jpg', 3, 1, 3),
+(4, 15, 279.00, 'chaise-nv-gallery-arcade.jpg', 1, 1, 4),
+(5, 100, 129.00, 'chaise-event.jpg', 6, 1, 5),
+(6, 5, 699.90, 'chaise-trone-baroque-vert.jpg', 2, 1, 6),
+(7, 10, 399.90, 'chaise-baroque-gris-or.jpg', 3, 1, 7),
+(8, 8, 899.90, 'chaise-chesterfield-cuir.jpg', 5, 1, 8),
+(9, 4, 1149.90, 'chaise-luxe-marron-bois.jpg', 8, 1, 9),
+(10, 2, 2399.90, 'chaise-design-creme-or.jpg', 6, 1, 10),
+(11, 12, 699.90, 'chaise-cuir-marron-fonce.jpg', 8, 1, 11),
+(12, 20, 799.90, 'chaise-black-club.jpg', 5, 1, 12),
+(13, 6, 899.90, 'chaise-cuir-beige-noir.jpg', 5, 1, 13),
+(14, 15, 199.90, 'chaise-barock.jpg', 6, 1, 14),
+(15, 15, 79250.90, 'chaise-longue-rio.jpg', 8, 1, 15);
 
 INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-20 10:30:00', 2, 4),
@@ -289,7 +361,6 @@ INSERT INTO ligne_commande (commande_id, meuble_id, prix, quantite) VALUES
 (1, 2, 780.0, 1),
 (7, 1, 310.49, 5),
 (10, 2, 690.0, 8),
-
 (2, 13, 115.00, 1);
 
 INSERT INTO ligne_panier (utilisateur_id, meuble_id, quantite, date_ajout) VALUES
