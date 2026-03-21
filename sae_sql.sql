@@ -1,10 +1,10 @@
-SET FOREIGN_KEY_CHECKS = 0;
 
-DROP TABLE IF EXISTS commentaire;
-DROP TABLE IF EXISTS note;
-DROP TABLE IF EXISTS declinaison_meuble;
 DROP TABLE IF EXISTS ligne_panier;
 DROP TABLE IF EXISTS ligne_commande;
+DROP TABLE IF EXISTS declinaison_meuble;
+DROP TABLE IF EXISTS commentaire;
+DROP TABLE IF EXISTS note;
+
 DROP TABLE IF EXISTS couleur;
 DROP TABLE IF EXISTS taille;
 DROP TABLE IF EXISTS commande;
@@ -14,7 +14,6 @@ DROP TABLE IF EXISTS type_meuble;
 DROP TABLE IF EXISTS materiau;
 DROP TABLE IF EXISTS etat;
 
-SET FOREIGN_KEY_CHECKS = 1;
 
 CREATE TABLE etat (
   id_etat INT NOT NULL AUTO_INCREMENT,
@@ -71,18 +70,18 @@ CREATE TABLE commande (
 
 CREATE TABLE ligne_commande (
   commande_id INT NOT NULL,
-  meuble_id INT NOT NULL,
+  id_declinaison_meuble INT NOT NULL,
   prix DECIMAL(10,2),
   quantite INT,
-  PRIMARY KEY (commande_id, meuble_id)
+  PRIMARY KEY (commande_id, id_declinaison_meuble)
 );
 
 CREATE TABLE ligne_panier (
   utilisateur_id INT NOT NULL,
-  meuble_id INT NOT NULL,
+  id_declinaison_meuble INT NOT NULL,
   quantite INT,
   date_ajout DATETIME,
-  PRIMARY KEY (utilisateur_id, meuble_id)
+  PRIMARY KEY (utilisateur_id, id_declinaison_meuble)
 );
 
 CREATE TABLE couleur (
@@ -128,9 +127,8 @@ CREATE TABLE declinaison_meuble (
 );
 
 ALTER TABLE meuble
-ADD CONSTRAINT fk_meu_typ FOREIGN KEY (type_meuble_id) REFERENCES type_meuble(id_type_meuble);
-
-ADD CONSTRAINT fk_meu_mat FOREIGN KEY (materiau_id) REFERENCES materiau(id_materiau),
+ADD CONSTRAINT fk_meu_typ FOREIGN KEY (type_meuble_id) REFERENCES type_meuble(id_type_meuble),
+ADD CONSTRAINT fk_meu_mat FOREIGN KEY (materiau_id) REFERENCES materiau(id_materiau);
 
 ALTER TABLE commande
 ADD CONSTRAINT fk_cmd_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
@@ -138,11 +136,11 @@ ADD CONSTRAINT fk_cmd_eta FOREIGN KEY (etat_id) REFERENCES etat(id_etat);
 
 ALTER TABLE ligne_commande
 ADD CONSTRAINT fk_lic_cmd FOREIGN KEY (commande_id) REFERENCES commande(id_commande),
-ADD CONSTRAINT fk_lic_meu FOREIGN KEY (meuble_id) REFERENCES declinaison_meuble(id_declinaison_meuble);
+ADD CONSTRAINT fk_lic_meu FOREIGN KEY (id_declinaison_meuble) REFERENCES declinaison_meuble(id_declinaison_meuble);
 
 ALTER TABLE ligne_panier
 ADD CONSTRAINT fk_lip_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
-ADD CONSTRAINT fk_lip_meu FOREIGN KEY (meuble_id) REFERENCES declinaison_meuble(id_declinaison_meuble);
+ADD CONSTRAINT fk_lip_meu FOREIGN KEY (id_declinaison_meuble) REFERENCES declinaison_meuble(id_declinaison_meuble);
 
 ALTER TABLE commentaire
 ADD CONSTRAINT fk_com_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
@@ -308,7 +306,7 @@ INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-29 12:27:00', 3, 4),
 ('2026-01-23 14:15:00', 3, 1);
 
-INSERT INTO ligne_commande (commande_id, meuble_id, prix, quantite) VALUES
+INSERT INTO ligne_commande (commande_id, id_declinaison_meuble, prix, quantite) VALUES
 (1, 1, 129.00, 4),
 (1, 6, 550.00, 1),
 (7, 15, 520.99, 10),
@@ -363,7 +361,7 @@ INSERT INTO ligne_commande (commande_id, meuble_id, prix, quantite) VALUES
 (10, 2, 690.0, 8),
 (2, 13, 115.00, 1);
 
-INSERT INTO ligne_panier (utilisateur_id, meuble_id, quantite, date_ajout) VALUES
+INSERT INTO ligne_panier (utilisateur_id, id_declinaison_meuble, quantite, date_ajout) VALUES
 # Ajoute
 (2, 1, 3, '2026-01-24 19:25:00'),
 (3, 8, 1, '2026-01-24 15:32:00'),
