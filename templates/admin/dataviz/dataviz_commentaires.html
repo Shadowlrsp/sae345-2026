@@ -15,7 +15,7 @@
     <form method="get" action="{{ url_for('admin_dataviz_commentaire.dataviz_commentaires') }}" class="mb-4">
         <label for="type_meuble_id" class="form-label">Choisir un type d'article :</label>
         <select class="form-select w-25" name="type_meuble_id" id="type_meuble_id" onchange="this.form.submit()">
-            <option value="">-- Tous les types --</option>
+            <option value="">Sélectionner un type de meuble</option>
             {% for type in types_meubles %}
                 <option value="{{ type.id_type_meuble }}"
                     {% if request.args.get('type_meuble_id') == type.id_type_meuble|string %} selected {% endif %}>
@@ -59,7 +59,6 @@
     </div>
 
     <script>
-    // Configuration commune pour forcer le zéro
     var commonOptions = {
         responsive: true,
         scales: {
@@ -104,8 +103,6 @@
     });
 </script>
 
-    {% else %}
-        <p class="alert alert-warning">Aucun meuble trouvé pour ce type.</p>
     {% endif %}
 </div>
 {% endblock %}

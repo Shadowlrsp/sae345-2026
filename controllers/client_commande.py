@@ -118,6 +118,14 @@ def client_commande_show():
     id_commande = request.args.get('id_commande', None)
 
     if id_commande != None:
+        sql_verif = "SELECT * FROM commande WHERE id_commande = %s AND utilisateur_id = %s"
+        mycursor.execute(sql_verif, (id_commande, id_client))
+        commande_existante = mycursor.fetchone()
+
+        if not commande_existante:
+            flash(u"Commande introuvable", 'alert-warning')
+            return redirect('/client/commande/show')
+
         sql = '''
                   SELECT lc.*,
                          m.nom_meuble AS nom,
