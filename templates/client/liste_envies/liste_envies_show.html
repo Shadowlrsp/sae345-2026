@@ -15,6 +15,16 @@ articles (tableau de dictionnaires)
 
 {% block body %}
 <h3>votre liste d'envies</h3>
+    {% if focus_other_ppl %}
+{#        <p>{{ focus_other_ppl }}</p>#}
+        <p style="color: green">{{ focus_other_ppl.nbrUtils }} autre personnes ont deja ajoute cet article</p>
+    {% else %}
+        <p style="color: green">Vous etes le seul a avoir ajoute cet article a votre wishlist</p>
+    {% endif %}
+    {% if focus_nb_type %}
+{#        <p>{{ focus_nb_type }}</p>#}
+        <p style="color: blue">Vous avez {{ focus_nb_type.nbrArticles }} autre articles du meme type dans votre wishlist</p>
+    {% endif %}
 <br><br>
 
 <table class="table">

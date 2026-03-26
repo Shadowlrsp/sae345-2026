@@ -81,9 +81,50 @@ def client_liste_envies_show():
     articles_historique = mycursor.fetchall()
     print(articles_historique)
 
+    # focus start
+    focus_nb_type = None
+    focus_other_ppl = None
+    print('FOCUS\nFOCUS\nFOCUS\nFOCUS\n')
+    id_focus = request.args.get('id_article_detail_wishlist')
+    if id_focus:
+        # ===== VERT, nombre de personnes autre que nous ayant ajoute l'article en wishlist
+
+        # focus = article depuis le sql
+        sql = '''SELECT COUNT(*) - 1 as nbrUtils, meuble.nom_meuble FROM utilisateur
+            JOIN liste_envie ON liste_envie.utilisateur_id = utilisateur.id_utilisateur
+            JOIN meuble ON id_meuble = liste_envie.meuble_id
+            WHERE id_meuble = %s
+            GROUP BY meuble_id, nom_meuble
+            HAVING COUNT(*) > 1
+        '''
+        mycursor.execute(sql, id_focus)
+        focus_other_ppl = mycursor.fetchone()
+        print(f'FOCUS ID {id_focus}')
+        print(focus_other_ppl)
+
+        # ===== BLEU, nombre d'articles du meme type hors du courrant dans la wishlist
+        sql = '''SELECT type_meuble_id FROM meuble WHERE id_meuble = %s'''
+        mycursor.execute(sql, id_focus)
+        type_focus = mycursor.fetchone()
+        print(type_focus)
+        id_type_focus = type_focus['type_meuble_id']
+
+        sql = '''SELECT (COUNT(*)-1) as nbrArticles, type_meuble_id, type_meuble.libelle_type_meuble FROM liste_envie
+                JOIN meuble ON meuble_id = meuble.id_meuble
+                JOIN type_meuble ON meuble.type_meuble_id = type_meuble.id_type_meuble
+                WHERE utilisateur_id = %s AND type_meuble_id = %s
+            GROUP BY type_meuble_id, libelle_type_meuble
+            HAVING COUNT(*) > 0'''
+        mycursor.execute(sql, (id_client, id_type_focus))
+        focus_nb_type = mycursor.fetchone()
+        print(focus_nb_type)
+
+
     return render_template('client/liste_envies/liste_envies_show.html'
                            ,articles_liste_envies=articles_liste_envies
                            , articles_historique=articles_historique
+                           , focus_other_ppl=focus_other_ppl
+                           , focus_nb_type=focus_nb_type
                            , nb_liste_envies=nb_liste_envies['COUNT(*)']
                            , nb_liste_historique=nb_historique['COUNT(*)']
                            )
