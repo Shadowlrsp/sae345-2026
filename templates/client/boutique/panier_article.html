@@ -1,95 +1,115 @@
-{#  articles_panier  : tableau de dictionnaires
-        * dictionnaire : nom quantite prix article_id [stock]
-        *
-#}
-
 {% extends "client/layout_client.html" %}
 {% block body %}
-    <div class="container">
-        <div class="row align-self-right">
-        {% include('client/boutique/_panier.html') %}
-            <div class="col">
-              <h3>Les filtres</h3>
-              Articles dont le nom est composé par :<br>
-                 {% include('client/boutique/_filtre.html') %}
+<div class="container my-5">
+    
+    <div class="row mb-5">
+        <div class="col-lg-8 mb-4 mb-lg-0">
+            {% include('client/boutique/_panier.html') %}
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 bg-light h-100">
+                <div class="card-body">
+                    <h4 class="card-title text-success mb-3"><i class="fas fa-filter"></i> Filtres</h4>
+                    <p class="text-muted small">Recherche par nom ou catégories :</p>
+                    {% include('client/boutique/_filtre.html') %}
+                </div>
             </div>
         </div>
+    </div>
 
-        <div class="bg-light p-3">
-            <h1>Les articles</h1>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h2 class="h3 mb-0 text-dark">Nos Articles</h2>
+    </div>
 
-        <div class="row">
-                {% for article in articles  %}
-                        <div class="card col-4 mt-4 p-1">
-                            <div class="card-body border-dark rounded p-1">
-                                <a href="/client/article/details?id_article={{ article.id_article }}" >
-                                <h3 class="card-title">
-                                    <span style="color: #0b2e13">{{ article.nom }}</span><br>
-                                    {{ article.prix }}
-                                    €
-                                </h3>
-                                     {%  if article.image is not none %}
-                                        <img class="card-img-top rounded mx-auto d-block"  style="width:100px;height:100px"  src="{{ url_for('static', filename = 'images/')}}{{ article.image }}"  alt="image  de {{ article.nom }}" >
-                                    {% else %} <img class="card-img-top rounded mx-auto d-block"   style="width:100px;height:100px"   src="{{ url_for('static', filename='images/no_photo.jpeg')}}"  alt="image  de {{ article.nom }}" >
-                                    {% endif %}
-                                    <hr>
-                                </a>
-                                <div class="row">
-{# #}                                {% if  article.stock is defined and article.stock != None %}
-{# #}                                    {% if article.stock > 0 %}
-                                        <form  action="/client/panier/add"  method="post" class="col-5">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for article in articles %}
+            <div class="col">
+                <div class="card h-100 shadow-sm border-0 rounded">
+                    
+                    <div class="position-relative">
+                        <div class="position-absolute top-0 end-0 p-2" style="z-index: 10;">
+                            {% if article.liste_envie is defined %}
+                                {% if article.liste_envie == 1 %}
+                                    <a href="/client/envie/add?id_article={{ article.id_article }}" class="btn btn-light btn-sm rounded-circle shadow-sm" title="Retirer des favoris">❤️</a>
+                                {% else %}
+                                    <a href="/client/envie/add?id_article={{ article.id_article }}" class="btn btn-light btn-sm rounded-circle shadow-sm" title="Ajouter aux favoris">🤍</a>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <a href="/client/article/details?id_article={{ article.id_article }}" class="d-block text-center p-3 bg-white">
+                            {% if article.image is not none %}
+                                <img src="{{ url_for('static', filename='images/' ~ article.image) }}" class="img-fluid" alt="image de {{ article.nom }}" style="height: 200px; object-fit: contain;">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='images/no_photo.jpeg') }}" class="img-fluid" alt="image manquante" style="height: 200px; object-fit: contain;">
+                            {% endif %}
+                        </a>
+                    </div>
+                    
+                    <div class="card-body d-flex flex-column bg-light">
+                        <a href="/client/article/details?id_article={{ article.id_article }}" class="text-decoration-none text-dark mb-3">
+                            <h5 class="card-title fw-bold" style="color: #0b2e13">{{ article.nom }}</h5>
+                            <h4 class="text-success fw-bold">{{ article.prix }} €</h4>
+                        </a>
+
+                        <div class="mt-auto">
+                            {% if article.stock is defined and article.stock != None %}
+                                {% if article.stock > 0 %}
+                                
+                                    {% if article.nb_declinaison > 1 %}
+                                        <a href="/client/panier/declinaison?id_article={{ article.id_article }}" class="btn btn-info w-100 text-white font-weight-bold">
+                                            <i class="fas fa-list"></i> Voir les options ({{ article.nb_declinaison }})
+                                        </a>
+                                    {% else %}
+                                        <form action="/client/panier/add" method="post">
                                             <input type="hidden" name="id_article" value="{{ article.id_article }}">
                                             <div class="input-group">
-                                            <button class="btn  btn-success"  id="button-addon1">
-                                                <i class="fas fa-shopping-cart">Ajouter</i>
-                                            </button>
-                                            <input type="number" id="input-{{ article.id_article }}" step="1" min="0" max="{{ article.stock }}" class="form-control" value="1" name="quantite"  aria-describedby="button-addon1">
+                                                <input type="number" id="input-{{ article.id_article }}" step="1" min="1" max="{{ article.stock }}" class="form-control" value="1" name="quantite" aria-label="Quantité">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-success" type="submit">
+                                                        <i class="fas fa-cart-plus"></i> Ajouter
+                                                    </button>
+                                                </div>
                                             </div>
                                         </form>
-{# #}                                    {% endif %}
-{# #}                                {% endif %}
-                                     <div class="col-2 align-content-end">
-                                    {% if article.liste_envie is defined %}
-                                         {%if  article.liste_envie== 1%}
-                                             <a href="/client/envie/add?id_article={{ article.id_article }}" style="text-decoration: none">💛</a>
-                                         {% else %}
-                                             <a href="/client/envie/add?id_article={{ article.id_article }}" style="text-decoration: none">🤍</a>
-                                         {% endif %}
                                     {% endif %}
-                                     </div>
-                                </div>
-                            </div>
-                            <div class="card-footer">
-                            {% if article.stock is defined and article.stock != None %}
-                                 {% if article.stock > 0 %}
-                                    <small class="text-muted">Stock restant : {{ article.stock }}</small>
-                                 {% else %}
-                                    <small class="text-muted">article  momentanément indisponible</small>
-                                 {% endif %}
-                                {% if article.nb_declinaison is defined and article.nb_declinaison != None %}
-                                    ({{ article.nb_declinaison }} d.)
-                                {% endif %}
-                                <br>
-                            {% endif %}
-                            {% if article.nb_notes is defined %}
-                                {% if article.nb_notes > 0 %}
-                                 <a  href="/client/article/details?id_article={{ article.id_article }}" >
-                                    <span style="color: #3A7734"> note : {{  "{:,.1f}".format(article.moy_notes) }}({{ article.nb_notes }})</span>
-                                 </a>
+                                    
+                                {% else %}
+                                    <div class="alert alert-danger text-center mb-0 py-2" role="alert">
+                                        Momentanément indisponible
+                                    </div>
                                 {% endif %}
                             {% endif %}
-                            {% if article.nb_avis is defined %}
-                                {% if article.nb_avis > 0 %}
-                                 <a href="/client/article/details?id_article={{ article.id_article }}" >
-                                    <span style="color: #3A7734">({{ article.nb_avis }} avis)</span>
-                                 </a>
-                                {% endif %}
-                            {% endif %}
-                            </div>
                         </div>
-                {% endfor %}
-        </div>
+                    </div>
+                    
+                    <div class="card-footer bg-white border-top-0 pt-0 pb-3">
+                        <div class="d-flex justify-content-between align-items-center small">
+                            <span class="text-muted">
+                                {% if article.stock is defined and article.stock != None and article.stock > 0 %}
+                                    Stock : {{ article.stock }}
+                                {% endif %}
+                            </span>
+                            
+                            <span class="text-right">
+                                {% if article.nb_notes is defined and article.nb_notes > 0 %}
+                                    <a href="/client/article/details?id_article={{ article.id_article }}" class="text-decoration-none text-warning font-weight-bold">
+                                        <i class="fas fa-star"></i> {{ "{:,.1f}".format(article.moy_notes) }}
+                                    </a>
+                                {% endif %}
+                                
+                                {% if article.nb_avis is defined and article.nb_avis > 0 %}
+                                    <a href="/client/article/details?id_article={{ article.id_article }}" class="text-decoration-none text-secondary ml-2">
+                                        <i class="fas fa-comment"></i> {{ article.nb_avis }}
+                                    </a>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        {% endfor %}
     </div>
-{#    {{ articles | pprint }}#}
+</div>
 {% endblock %}

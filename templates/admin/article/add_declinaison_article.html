@@ -1,53 +1,95 @@
 {% extends 'admin/layout_admin.html' %}
 
 {% block title %}
-    <title>ajouter un casque</title>
+    <title>Ajouter une déclinaison</title>
 {% endblock %}
 
 {% block body %}
-    <h2>ajouter une déclinaison d'un article</h2>
-    <div class="row mt-5">
-    {% if article.image is defined and article.image is not none %}
-        <img class="card-img-top rounded mx-4 d-block"  style="width:200px; height:200px; border: 1px solid black; padding: 25px;" id="output" src="{{ url_for('static', filename = 'images/')}}{{ article.image }}" alt="">
-    {% endif %}
-        <div class="w-25">
-            <form class="w-190" method="post" action="/admin/declinaison_article/add">
-                <input id="id_article" type="hidden" name="id_article" value="{{ article.id_article }}">
-                <label for="stock">stock :
-                    <input name="stock" id="stock" type="number" class="form-control" required>
-                </label>
-                {% if  d_couleur_uniq is defined and  d_couleur_uniq==1 %}
-                    <div>!</div><div><strong>Une couleur unique est définie </strong></div>
-                    <input type="hidden" name="couleur" value="1">
-                {% else %}
-                <label for="couleur">Couleur :
-                    <select name="couleur" required class="form-select">
-                        <option value="">Sélectionner une couleur</option>
-                        {% for couleur in couleurs %}
-                             <option value="{{ couleur.id_couleur }}"> {{ couleur.libelle }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                {% endif %}
-                {% if  d_taille_uniq is defined and  d_taille_uniq==1 %}
-                    <div>!</div><div><strong>Une taille unique est définie </strong></div>
-                    <input type="hidden" name="taille" value="1">
-                {% else %}
-                <label for="taille">Taille :
-                    <select id="taille" name="taille" required class="form-select">
-                        <option value="">Sélectionner une taille</option>
-                        {% for taille in tailles %}
-                            <option value="{{ taille.id_taille }}"> {{ taille.libelle }}</option>
-                        {% endfor %}
-                    </select>
-                </label>
-                {% endif %}
-                <label for="submit">
-                    <input name="submit" type="submit" value="Ajouter" class="btn btn-primary mt-2">
-                </label>
+<div class="container-fluid mt-4">
+    <h2 class="mb-4"><i class="fas fa-plus-circle text-primary"></i> Ajouter une déclinaison pour : <span class="text-success">{{ article.nom }}</span></h2>
 
-            </form>
-         <a href="/admin/article/edit?id_article={{ article.id_article }}"><button class="btn btn-secondary mt-2">annuler</button></a>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3 text-center border-0">
+                {% if article.image is defined and article.image is not none and article.image != '' %}
+                    <img class="img-fluid rounded border" style="max-height: 250px; object-fit: contain;" src="{{ url_for('static', filename='images/' ~ article.image) }}" alt="Image de {{ article.nom }}">
+                {% else %}
+                    <img class="img-fluid rounded border" style="max-height: 250px; object-fit: contain;" src="{{ url_for('static', filename='images/no_photo.jpeg') }}" alt="Aucune photo">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    {% if d_taille_uniq == 1 and d_couleur_uniq == 1 %}
+                        <div class="alert alert-danger shadow-sm border-danger">
+                            <h4 class="alert-heading"><i class="fas fa-ban"></i> Ajout bloqué</h4>
+                            <p>Cet article est déjà configuré avec une <strong>Taille Unique</strong> et une <strong>Couleur Unique</strong>.</p>
+                            <hr>
+                            <p class="mb-0">Conformément aux règles, vous ne pouvez pas rajouter de variantes spécifiques à un article "Unique". Modifiez son stock depuis la page précédente, ou supprimez la variante unique pour repartir de zéro.</p>
+                        </div>
+                        <a href="/admin/article/edit?id_article={{ article.id_article }}" class="btn btn-secondary mt-3 shadow-sm">
+                            <i class="fas fa-arrow-left"></i> Retour à l'article
+                        </a>
+                    
+                    {# SINON : On affiche le formulaire normal #}
+                    {% else %}
+                        <form method="post" action="/admin/declinaison_article/add">
+                            <input type="hidden" name="id_article" value="{{ article.id_article }}">
+
+                            <div class="form-group mb-3">
+                                <label for="stock" class="font-weight-bold">Stock :</label>
+                                <input name="stock" id="stock" type="number" min="0" class="form-control" required>
+                            </div>
+
+                            <div class="form-group mb-3">
+                                {% if d_couleur_uniq is defined and d_couleur_uniq == 1 %}
+                                    <div class="alert alert-warning py-2 mb-0 border-warning">
+                                        <i class="fas fa-exclamation-triangle"></i> <strong>Couleur unique imposée</strong> (déjà définie en base)
+                                        <input type="hidden" name="id_couleur" value="1">
+                                    </div>
+                                {% else %}
+                                    <label for="id_couleur" class="font-weight-bold">Couleur :</label>
+                                    {# Attention au nom (id_couleur) pour que le Python le capte bien #}
+                                    <select name="id_couleur" id="id_couleur" class="form-control custom-select" required>
+                                        <option value="">-- Sélectionner une couleur --</option>
+                                        {% for couleur in couleurs %}
+                                            <option value="{{ couleur.id_couleur }}">{{ couleur.libelle_couleur | default(couleur.libelle) }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
+                            </div>
+
+                            <div class="form-group mb-4">
+                                {% if d_taille_uniq is defined and d_taille_uniq == 1 %}
+                                    <div class="alert alert-warning py-2 mb-0 border-warning">
+                                        <i class="fas fa-exclamation-triangle"></i> <strong>Taille unique imposée</strong> (déjà définie en base)
+                                        <input type="hidden" name="id_taille" value="1">
+                                    </div>
+                                {% else %}
+                                    <label for="id_taille" class="font-weight-bold">Taille :</label>
+                                    <select name="id_taille" id="id_taille" class="form-control custom-select" required>
+                                        <option value="">-- Sélectionner une taille --</option>
+                                        {% for taille in tailles %}
+                                            <option value="{{ taille.id_taille }}">{{ taille.libelle_taille | default(taille.libelle) }}</option>
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
+                            </div>
+
+                            <div class="d-flex justify-content-between mt-4">
+                                <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                    <i class="fas fa-check"></i> Ajouter
+                                </button>
+                                <a href="/admin/article/edit?id_article={{ article.id_article }}" class="btn btn-secondary px-4 shadow-sm">Annuler</a>
+                            </div>
+                        </form>
+                    {% endif %}
+
+                </div>
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}

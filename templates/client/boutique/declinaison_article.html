@@ -1,57 +1,75 @@
 {% extends "client/layout_client.html" %}
 {% block body %}
-   <h5>choix "déclinaison" d'articles</h5> {# {{ declinaisons | pprint }}#}
+<div class="container mt-4">
+    <h3 class="mb-4">Choix des options pour : <span style="color: #0b2e13">{{ article.nom }}</span></h3>
 
-    <div class="container">
-        <div class="row align-self-right">
-        <div class="card col-4 mt-4 p-1">
-                            <div class="card-body border-dark rounded p-1">
-                                <a href="/client/article/details?id_article={{ article.id_article }}" >
-                                <h2 class="card-title">
-                                    <span style="color: #0b2e13">{{ article.nom }}</span><br>
-                                    {{ article.prix }}
-                                    €
-                                </h2>
-                                     {%  if article.image is not none %}
-                                        <img class="card-img-top rounded mx-auto d-block"  style="width:100px;height:100px"  src="{{ url_for('static', filename = 'images/')}}{{ article.image }}"  alt="image  de {{ article.nom }}" >
-                                    {% else %} <img class="card-img-top rounded mx-auto d-block"   style="width:100px;height:100px"   src="{{ url_for('static', filename='images/no_photo.jpeg')}}"  alt="image  de {{ article.nom }}" >
-                                    {% endif %}
-                                    <hr>
-                                </a>
-                            </div>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card border-dark">
+                <div class="card-body text-center">
+                    <a href="/client/article/details?id_article={{ article.id_article }}" style="text-decoration: none; color: inherit;">
+                        <h4 class="card-title" style="color: #0b2e13">{{ article.nom }}</h4>
+                        
+                        {% if article.image is not none %}
+                            <img class="img-fluid rounded mx-auto d-block mt-3" style="max-height: 200px;" src="{{ url_for('static', filename='images/' ~ article.image) }}" alt="Image de {{ article.nom }}">
+                        {% else %}
+                            <img class="img-fluid rounded mx-auto d-block mt-3" style="max-height: 200px;" src="{{ url_for('static', filename='images/no_photo.jpeg') }}" alt="Pas d'image pour {{ article.nom }}">
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
         </div>
 
-            <ul>
-                {% for item_declinaison in declinaisons  %}
-                    <li>
-                    {% if item_declinaison.id_couleur is defined and  item_declinaison.id_couleur > 1 %}
-                        couleur : <stong style="color:{{ item_declinaison.code_couleur }}">{{ item_declinaison.libelle_couleur }}</stong>
-                    {% endif %}
-                    {% if item_declinaison.id_taille is defined and  item_declinaison.id_taille > 1 %}
-                      - taille : <span> {{ item_declinaison.libelle_taille }}</span>
-                    {% endif %}
-                    {% if item_declinaison.stock is defined and item_declinaison.stock != None %}
-                        {% if item_declinaison.stock > 0 %}
-                            <form  action="/client/panier/add"  method="post" class="col-2">
-                                 <input type="radio" name="id_declinaison_article" value="{{ item_declinaison.id_declinaison_article }}" required>
-                                    <small class="text-muted">Stock restant : {{ item_declinaison.stock }}</small>
-                                 <div class="input-group">
-                                    <button class="btn  btn-success"  id="button-addon1">
-                                            <i class="bi bi-cart"></i>
-                                        <i class="fas fa-shopping-cart"></i>Ajouter
-                                    </button>
-                                        <input type="number" id="input-{{ item_declinaison.id_declinaison_article }}" step="1" min="0" max="{{ item_declinaison.stock }}" class="form-control col-2" value="1" name="quantite"  aria-describedby="button-addon1">
-                                 </div>
-                            </form>
-                       {% else %}
-                                 <small class="text-muted">article  momentanément indisponible</small>
-                        {% endif %}
-                        </li>
-                      {% endif %}
-                    <hr class="col-5">
-                {% endfor %}
-            </ul>
+        <div class="col-md-8">
+            <div class="list-group">
+                {% for item_declinaison in declinaisons %}
+                    <div class="list-group-item list-group-item-action flex-column align-items-start mb-3 border rounded shadow-sm">
+                        
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">
+                                    {% if item_declinaison.id_couleur is defined and item_declinaison.id_couleur > 1 %}
+                                        Couleur : <strong style="color:{{ item_declinaison.code_couleur }}; text-shadow: 1px 1px 1px #ccc;">{{ item_declinaison.libelle_couleur }}</strong>
+                                    {% endif %}
+                                    
+                                    {% if item_declinaison.id_taille is defined and item_declinaison.id_taille > 1 %}
+                                        <span class="ml-2">- Taille : {{ item_declinaison.libelle_taille }}</span>
+                                    {% endif %}
+                                </h5>
+                                
+                                {% if item_declinaison.stock is defined and item_declinaison.stock != None %}
+                                    {% if item_declinaison.stock > 0 %}
+                                        <small class="text-success font-weight-bold">En stock ({{ item_declinaison.stock }} restants)</small>
+                                    {% else %}
+                                        <small class="text-danger font-weight-bold">Momentanément indisponible</small>
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            
+                            <h4 class="mb-0 text-dark">{{ item_declinaison.prix }} €</h4>
+                        </div>
 
+                        {% if item_declinaison.stock is defined and item_declinaison.stock != None and item_declinaison.stock > 0 %}
+                            <form action="/client/panier/add" method="post" class="mt-3" style="max-width: 300px;">
+                                
+                                <input type="hidden" name="id_article" value="{{ item_declinaison.id_declinaison_article }}">
+                                
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <button class="btn btn-success" type="submit" id="button-addon-{{ item_declinaison.id_declinaison_article }}">
+                                            <i class="fas fa-shopping-cart"></i> Ajouter
+                                        </button>
+                                    </div>
+                                    <input type="number" id="input-{{ item_declinaison.id_declinaison_article }}" step="1" min="1" max="{{ item_declinaison.stock }}" class="form-control" value="1" name="quantite" aria-describedby="button-addon-{{ item_declinaison.id_declinaison_article }}">
+                                </div>
+                                
+                            </form>
+                        {% endif %}
+                        
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
+</div>
 {% endblock %}

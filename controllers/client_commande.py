@@ -14,33 +14,41 @@ client_commande = Blueprint('client_commande', __name__,
 def client_commande_valide():
     mycursor = get_db().cursor()
     id_client = session['id_user']
+    
     sql = ''' 
-              SELECT lp.meuble_id,
-                     lp.utilisateur_id,
-                     lp.quantite,
-                     m.nom_meuble AS nom,
-                     m.prix_meuble AS prix,
-                     (m.prix_meuble * lp.quantite) AS total_ligne
-              FROM ligne_panier lp
-              JOIN meuble m ON m.id_meuble = lp.meuble_id
-              WHERE lp.utilisateur_id = %s
+            SELECT lp.meuble_declinaison_id AS id_article,
+                   m.nom_meuble AS nom,
+                   d.prix_declinaison AS prix,
+                   d.stock,         
+                   lp.quantite,
+                   (d.prix_declinaison * lp.quantite) AS total_ligne,
+                   c.id_couleur,
+                   c.libelle_couleur,
+                   ta.id_taille,
+                   ta.libelle_taille
+            FROM ligne_panier lp
+            JOIN declinaison_meuble d ON lp.meuble_declinaison_id = d.id_declinaison_meuble
+            JOIN meuble m ON d.meuble_id = m.id_meuble
+            LEFT JOIN couleur c ON d.couleur_id = c.id_couleur
+            LEFT JOIN taille ta ON d.taille_id = ta.id_taille
+            WHERE lp.utilisateur_id = %s
     '''
     mycursor.execute(sql, (id_client,))
     articles_panier = mycursor.fetchall()
 
     if len(articles_panier) >= 1:
-        sql = '''
-                  SELECT SUM(m.prix_meuble * lp.quantite) AS prix_total
+        # 2. Le prix total passe bien par les déclinaisons (d.prix_declinaison)
+        sql_total = '''
+                  SELECT SUM(d.prix_declinaison * lp.quantite) AS prix_total
                   FROM ligne_panier lp
-                  JOIN meuble m ON m.id_meuble = lp.meuble_id
+                  JOIN declinaison_meuble d ON d.id_declinaison_meuble = lp.meuble_declinaison_id
                   WHERE lp.utilisateur_id = %s '''
-        mycursor.execute(sql, (id_client,))
+        mycursor.execute(sql_total, (id_client,))
         result = mycursor.fetchone()
         prix_total = result['prix_total']
     else:
         prix_total = None
 
-    # etape 2 : selection des adresses
     return render_template('client/boutique/panier_validation_adresses.html'
                            , articles_panier=articles_panier
                            , prix_total=prix_total
@@ -51,45 +59,46 @@ def client_commande_valide():
 @client_commande.route('/client/commande/add', methods=['POST'])
 def client_commande_add():
     mycursor = get_db().cursor()
-
-    # choix de(s) (l')adresse(s)
-
     id_client = session['id_user']
-    sql = '''
-              SELECT lp.*, m.prix_meuble
+
+    sql_panier = '''
+              SELECT lp.meuble_declinaison_id, 
+                     lp.quantite, 
+                     d.prix_declinaison AS prix
               FROM ligne_panier lp
-              JOIN meuble m ON m.id_meuble = lp.meuble_id
+              JOIN declinaison_meuble d ON d.id_declinaison_meuble = lp.meuble_declinaison_id
               WHERE lp.utilisateur_id = %s '''
-    mycursor.execute(sql, (id_client,))
+    mycursor.execute(sql_panier, (id_client,))
     items_ligne_panier = mycursor.fetchall()
 
-    sql = '''
-              INSERT INTO commande(date_achat, utilisateur_id, etat_id)
-              VALUES (NOW(), %s, %s) '''
-    mycursor.execute(sql, (id_client, 1))
+    if not items_ligne_panier:
+        flash(u'Votre panier est vide', 'alert-warning')
+        return redirect('/client/article/show')
 
-    sql = '''SELECT last_insert_id() as last_insert_id'''
-    mycursor.execute(sql)
+    sql_insert_commande = '''
+              INSERT INTO commande(date_achat, utilisateur_id, etat_id)
+              VALUES (NOW(), %s, 1) '''
+    mycursor.execute(sql_insert_commande, (id_client,))
+
+    sql_last_id = '''SELECT last_insert_id() as last_insert_id'''
+    mycursor.execute(sql_last_id)
     id_commande = mycursor.fetchone()['last_insert_id']
-    # numéro de la dernière commande
 
     for item in items_ligne_panier:
-        sql = '''
-                  DELETE FROM ligne_panier WHERE utilisateur_id=%s AND meuble_id=%s '''
-        mycursor.execute(sql, (id_client, item['meuble_id']))
-
-        sql = '''
-                  INSERT INTO ligne_commande(commande_id, meuble_id, prix, quantite)
+        sql_insert_ligne = '''
+                  INSERT INTO ligne_commande(commande_id, meuble_declinaison_id, prix, quantite)
                   VALUES (%s, %s, %s, %s) '''
-        mycursor.execute(sql, (id_commande,
-                               item['meuble_id'],
-                               item['prix_meuble'],
-                               item['quantite']))
+        mycursor.execute(sql_insert_ligne, (id_commande,
+                                            item['meuble_declinaison_id'],
+                                            item['prix'],
+                                            item['quantite']))
+
+    sql_delete_panier = "DELETE FROM ligne_panier WHERE utilisateur_id = %s"
+    mycursor.execute(sql_delete_panier, (id_client,))
 
     get_db().commit()
-    flash(u'Commande ajoutée','alert-success')
+    flash(u'Commande validée avec succès !', 'alert-success')
     return redirect('/client/article/show')
-
 
 @client_commande.route('/client/commande/show', methods=['get','post'])
 def client_commande_show():
@@ -97,42 +106,41 @@ def client_commande_show():
     id_client = session['id_user']
 
     sql = ''' 
-              SELECT c.id_commande,
-                     c.date_achat,
-                     c.etat_id,
-                     e.libelle,
-                     COUNT(lc.meuble_id) AS nbr_articles,
-                     IFNULL(SUM(lc.prix * lc.quantite),0) AS prix_total
-              FROM commande c
-              LEFT JOIN ligne_commande lc ON lc.commande_id = c.id_commande
-              LEFT JOIN etat e ON e.id_etat = c.etat_id
-              WHERE c.utilisateur_id=%s
-              GROUP BY c.id_commande, c.date_achat, c.etat_id, e.libelle
-              ORDER BY c.date_achat ASC '''
+          SELECT c.id_commande,
+                 c.date_achat,
+                 c.etat_id,
+                 e.libelle,
+                 COUNT(lc.meuble_declinaison_id) AS nbr_articles,
+                 IFNULL(SUM(lc.prix * lc.quantite), 0) AS prix_total
+          FROM commande c
+          LEFT JOIN ligne_commande lc ON lc.commande_id = c.id_commande
+          LEFT JOIN etat e ON e.id_etat = c.etat_id
+          WHERE c.utilisateur_id = %s
+          GROUP BY c.id_commande, c.date_achat, c.etat_id, e.libelle
+          ORDER BY c.date_achat DESC '''
     mycursor.execute(sql, (id_client,))
     commandes = mycursor.fetchall()
 
     articles_commande = []
-    commande_adresses = {}
-
     id_commande = request.args.get('id_commande', None)
 
-    if id_commande != None:
+    if id_commande:
         sql = '''
-                  SELECT lc.*,
-                         m.nom_meuble AS nom,
-                         (lc.prix * lc.quantite) AS prix_ligne
-                  FROM ligne_commande lc
-                  JOIN meuble m ON m.id_meuble = lc.meuble_id
-                  WHERE lc.commande_id=%s '''
+              SELECT lc.prix, lc.quantite,
+                     m.nom_meuble AS nom,
+                     (lc.prix * lc.quantite) AS prix_ligne,
+                     cou.libelle_couleur,
+                     tai.libelle_taille
+              FROM ligne_commande lc
+              JOIN declinaison_meuble d ON d.id_declinaison_meuble = lc.meuble_declinaison_id
+              JOIN meuble m ON m.id_meuble = d.meuble_id
+              LEFT JOIN couleur cou ON d.couleur_id = cou.id_couleur
+              LEFT JOIN taille tai ON d.taille_id = tai.id_taille
+              WHERE lc.commande_id = %s '''
         mycursor.execute(sql, (id_commande,))
         articles_commande = mycursor.fetchall()
-
-        # partie 2 : selection de l'adresse de livraison et de facturation de la commande selectionnée
-        commande_adresses = {}
 
     return render_template('client/commandes/show.html'
                            , commandes=commandes
                            , articles_commande=articles_commande
-                           , commande_adresses=commande_adresses
                            )

@@ -1,73 +1,104 @@
 {% extends "client/layout_client.html" %}
 {% block body %}
-    <div class="container">
-        <div class="row align-self-right">
-            {% include('client/boutique/_panier.html') %}
-        </div>
-        <div class="row">
-             <br>
-            <a href="/client/coordonnee/show" class="btn btn-secondary mt-5 col-2"> ajouter une adresse (livrable 2)</a>
-            <form action="/client/commande/add"  style="display: inline-block;"  method="post" >
-            {% if adresses | length > 0 %}
-                <br>
-                    <h4>Choisisser l'adresse de livraison</h4>
-                    <select  name="id_adresse_livraison" name="adresse_livraison" required  class="form-select">
-                        <option value="">Sélectionner l'adresse de facturation</option>
-                        {% for adresse  in adresses %}
-
-                             <option value="{{ adresse.id_adresse }}"
-                             {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %}
-                                 selected
-                             {% endif %}
-
-                             >{{ adresse.nom }} ({{ adresse.code_postal }})
-                                 {{ adresse.ville }} - {{ adresse.rue }}
-                             {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %}
-                                 (f)
-                             {% endif %}
-
-                             </option>
-                        {% endfor %}
-                    </select>
-                    <br>
-
-                    <h4>Choisisser l'adresse de facturation</h4>
-                    adresse de facturation identique <input type="checkbox" name="adresse_identique" value="adresse_identique" id="adresse_identique" onclick="identique()">
-                <br>
-                    <select  id="id_adresse_facturation" name="id_adresse_facturation" required class="form-select">
-                        <option value="">Sélectionner l'adresse de livraison</option>
-                        {% for adresse  in adresses %}
-                             <option value="{{ adresse.id_adresse }}"
-                             {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %}
-                                 selected
-                             {% endif %}
-                             >{{ adresse.nom }} ({{ adresse.code_postal }})
-                                 {{ adresse.ville }} - {{ adresse.rue }}
-                             </option>
-                        {% endfor %}
-                    </select>
-                {%  else %}
-                    Il faut une adresse de livraison et de facturation pour valider la commande (livrable 2)
-                    <a href="/client/coordonnee/show"  class="btn btn-primary">Ajouter une adresse (livrable 2)</a>
-                {% endif %}
-                <br>
-                <button class="btn btn-primary mt-4" > Passer ma commande </button>
-            </form>
-        </div>
+<div class="container my-5">
+    
+    <div class="mb-5">
+        {% include('client/boutique/_panier.html') %}
     </div>
 
-    <script>
-    function identique(){
-	if(document.getElementById('adresse_identique').checked == true)
-        {
-        document.getElementById("id_adresse_facturation").style.display = 'none';
-        document.getElementById("id_adresse_facturation").required = false;
-        }
-        else
-        {
-        document.getElementById("id_adresse_facturation").style.display = 'block';
-        document.getElementById("id_adresse_facturation").required = true;
-        }
-    };
-    </script>
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white border-bottom-0 pt-4 pb-0">
+            <h3 class="text-dark"><i class="fas fa-truck text-success"></i> Expédition & Facturation</h3>
+        </div>
+        
+        <div class="card-body">
+            {% if adresses | length > 0 %}
+            <form action="/client/commande/add" method="post">
+                <div class="row mt-3">
+                    
+                    <div class="col-md-6 mb-4">
+                        <h5 class="text-muted mb-3">Où devons-nous livrer ?</h5>
+                        
+                        <div class="form-group">
+                            <label for="id_adresse_livraison" class="font-weight-bold">Adresse de livraison *</label>
+                            <select id="id_adresse_livraison" name="id_adresse_livraison" required class="form-control custom-select">
+                                <option value="">-- Sélectionnez une adresse --</option>
+                                {% for adresse in adresses %}
+                                    <option value="{{ adresse.id_adresse }}" {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %}selected{% endif %}>
+                                        {{ adresse.nom }} ({{ adresse.code_postal }}) - {{ adresse.ville }}, {{ adresse.rue }}
+                                        {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %} ⭐ (Favorite){% endif %}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <a href="/client/coordonnee/show" class="btn btn-outline-secondary btn-sm">
+                                <i class="fas fa-plus"></i> Ajouter une autre adresse
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mb-4">
+                        <h5 class="text-muted mb-3">Et pour la facture ?</h5>
+                        
+                        <div class="custom-control custom-checkbox mb-3">
+                            <input type="checkbox" class="custom-control-input" name="adresse_identique" value="adresse_identique" id="adresse_identique" onclick="identique()">
+                            <label class="custom-control-label font-weight-bold text-success" for="adresse_identique" style="cursor:pointer;">
+                                Mon adresse de facturation est identique
+                            </label>
+                        </div>
+
+                        <div class="form-group" id="bloc_facturation">
+                            <label for="id_adresse_facturation" class="font-weight-bold">Adresse de facturation *</label>
+                            <select id="id_adresse_facturation" name="id_adresse_facturation" required class="form-control custom-select">
+                                <option value="">-- Sélectionnez une adresse --</option>
+                                {% for adresse in adresses %}
+                                    <option value="{{ adresse.id_adresse }}" {% if id_adresse_fav != 0 and id_adresse_fav == adresse.id_adresse %}selected{% endif %}>
+                                        {{ adresse.nom }} ({{ adresse.code_postal }}) - {{ adresse.ville }}, {{ adresse.rue }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mb-4">
+                
+                <div class="text-right">
+                    <button type="submit" class="btn btn-success btn-lg shadow-sm font-weight-bold px-5">
+                        <i class="fas fa-check-circle"></i> Confirmer la commande
+                    </button>
+                </div>
+            </form>
+
+            {% else %}
+            <div class="alert alert-warning text-center p-4 rounded shadow-sm">
+                <i class="fas fa-exclamation-triangle fa-2x mb-3 text-warning"></i>
+                <h4>Oups, nous ne savons pas où vous livrer !</h4>
+                <p>Il vous faut au moins une adresse enregistrée pour pouvoir finaliser votre commande.</p>
+                <a href="/client/coordonnee/show" class="btn btn-primary mt-2">
+                    <i class="fas fa-plus"></i> Ajouter une adresse de livraison
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function identique() {
+    var checkbox = document.getElementById('adresse_identique');
+    var blocFacturation = document.getElementById("bloc_facturation");
+    var selectFacturation = document.getElementById("id_adresse_facturation");
+
+    if (checkbox.checked === true) {
+        blocFacturation.style.display = 'none';
+        selectFacturation.required = false;
+    } else {
+        blocFacturation.style.display = 'block';
+        selectFacturation.required = true;
+    }
+}
+</script>
 {% endblock %}

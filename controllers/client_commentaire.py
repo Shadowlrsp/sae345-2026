@@ -65,7 +65,8 @@ def client_article_details():
     SELECT COUNT(*) AS nb_commandes_article
     FROM ligne_commande lc
     JOIN commande c ON lc.commande_id = c.id_commande
-    WHERE lc.meuble_id = %s
+    JOIN declinaison_meuble dm ON lc.meuble_declinaison_id = dm.id_declinaison_meuble
+    WHERE dm.meuble_id = %s
     AND c.utilisateur_id = %s
     '''
     mycursor.execute(sql, (id_article, id_client))

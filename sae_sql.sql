@@ -70,18 +70,18 @@ CREATE TABLE commande (
 
 CREATE TABLE ligne_commande (
   commande_id INT NOT NULL,
-  id_declinaison_meuble INT NOT NULL,
+  meuble_declinaison_id INT NOT NULL,
   prix DECIMAL(10,2),
   quantite INT,
-  PRIMARY KEY (commande_id, id_declinaison_meuble)
+  PRIMARY KEY (commande_id, meuble_declinaison_id)
 );
 
 CREATE TABLE ligne_panier (
   utilisateur_id INT NOT NULL,
-  id_declinaison_meuble INT NOT NULL,
+  meuble_declinaison_id INT NOT NULL,
   quantite INT,
   date_ajout DATETIME,
-  PRIMARY KEY (utilisateur_id, id_declinaison_meuble)
+  PRIMARY KEY (utilisateur_id, meuble_declinaison_id)
 );
 
 CREATE TABLE couleur (
@@ -119,7 +119,6 @@ CREATE TABLE declinaison_meuble (
   id_declinaison_meuble INT NOT NULL AUTO_INCREMENT,
   stock INT,
   prix_declinaison DECIMAL(10,2),
-  image_declinaison VARCHAR(255),
   couleur_id INT NOT NULL,
   taille_id INT NOT NULL,
   meuble_id INT NOT NULL,
@@ -136,11 +135,11 @@ ADD CONSTRAINT fk_cmd_eta FOREIGN KEY (etat_id) REFERENCES etat(id_etat);
 
 ALTER TABLE ligne_commande
 ADD CONSTRAINT fk_lic_cmd FOREIGN KEY (commande_id) REFERENCES commande(id_commande),
-ADD CONSTRAINT fk_lic_meu FOREIGN KEY (id_declinaison_meuble) REFERENCES declinaison_meuble(id_declinaison_meuble);
+ADD CONSTRAINT fk_lic_meu FOREIGN KEY (meuble_declinaison_id) REFERENCES declinaison_meuble(id_declinaison_meuble);
 
 ALTER TABLE ligne_panier
 ADD CONSTRAINT fk_lip_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
-ADD CONSTRAINT fk_lip_meu FOREIGN KEY (id_declinaison_meuble) REFERENCES declinaison_meuble(id_declinaison_meuble);
+ADD CONSTRAINT fk_lip_meu FOREIGN KEY (meuble_declinaison_id) REFERENCES declinaison_meuble(id_declinaison_meuble);
 
 ALTER TABLE commentaire
 ADD CONSTRAINT fk_com_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur),
@@ -201,7 +200,10 @@ INSERT INTO meuble (nom_meuble, largeur, hauteur, prix_meuble, fournisseur, marq
 ('Plotuvyn Lustre', 70.00, 150.00, 7905.00, 'Neutralightning', 'Neutralightning', 'lum4.jpg', 15, 7, 4, 'Linaire contemporain aux finitions dorées, alliant éclairage LED et design industriel.'),
 ('Avalon triple', 130.00, 102.00, 48410.00, 'Espace-Lumière', 'CTO-Lightening', 'lum5.jpg', 15, 6, 4, 'Luminaire de haute joaillerie en bronze et albâtre, diffusant une lumière chaude et tamisée.');
 
-INSERT INTO couleur (libelle_couleur, code_couleur) VALUES 
+
+
+INSERT INTO couleur (libelle_couleur, code_couleur) VALUES
+
 ('Bleu Royal', '#002366'),
 ('Vert Émeraude', '#50C878'),
 ('Gris Anthracite', '#383E42'),
@@ -209,30 +211,43 @@ INSERT INTO couleur (libelle_couleur, code_couleur) VALUES
 ('Noir Mat', '#28282B'),
 ('Crème', '#FFFDD0'),
 ('Terre de Sienne', '#A0522D'),
-('Noyer', '#5D3922');
+('Noyer', '#5D3922'),
+('couleur de base', '#000'),
+('couleur unique', '#001');
 
-INSERT INTO taille (libelle_taille, code_taille) VALUES 
+INSERT INTO taille (libelle_taille, code_taille) VALUES
 ('Standard', 'S'),
 ('Large', 'L'),
 ('XL', 'XL'),
 ('Unique', 'U');
 
-INSERT INTO declinaison_meuble (id_declinaison_meuble, stock, prix_declinaison, image_declinaison, couleur_id, taille_id, meuble_id) VALUES
-(1, 20, 189.90, 'chaise-baroque-bleu-royal.jpg', 1, 1, 1),
-(2, 50, 229.95, 'chaises-protea.jpg', 6, 1, 2),
-(3, 30, 199.95, 'chaise-tallin-tissu.jpg', 3, 1, 3),
-(4, 15, 279.00, 'chaise-nv-gallery-arcade.jpg', 1, 1, 4),
-(5, 100, 129.00, 'chaise-event.jpg', 6, 1, 5),
-(6, 5, 699.90, 'chaise-trone-baroque-vert.jpg', 2, 1, 6),
-(7, 10, 399.90, 'chaise-baroque-gris-or.jpg', 3, 1, 7),
-(8, 8, 899.90, 'chaise-chesterfield-cuir.jpg', 5, 1, 8),
-(9, 4, 1149.90, 'chaise-luxe-marron-bois.jpg', 8, 1, 9),
-(10, 2, 2399.90, 'chaise-design-creme-or.jpg', 6, 1, 10),
-(11, 12, 699.90, 'chaise-cuir-marron-fonce.jpg', 8, 1, 11),
-(12, 20, 799.90, 'chaise-black-club.jpg', 5, 1, 12),
-(13, 6, 899.90, 'chaise-cuir-beige-noir.jpg', 5, 1, 13),
-(14, 15, 199.90, 'chaise-barock.jpg', 6, 1, 14),
-(15, 15, 79250.90, 'chaise-longue-rio.jpg', 8, 1, 15);
+INSERT INTO declinaison_meuble (id_declinaison_meuble, stock, prix_declinaison, couleur_id, taille_id, meuble_id) VALUES
+(1, 20, 189.90, 1, 1, 1),
+(2, 50, 229.95, 6, 1, 2),
+(3, 30, 199.95, 3, 1, 3),
+(4, 15, 279.00, 1, 1, 4),
+(5, 100, 129.00, 6, 1, 5),
+(6, 5, 699.90, 2, 1, 6),
+(7, 10, 399.90, 3, 1, 7),
+(8, 8, 899.90, 5, 1, 8),
+(9, 4, 1149.90, 8, 1, 9),
+(10, 2, 2399.90, 6, 1, 10),
+(11, 12, 699.90, 8, 1, 11),
+(12, 20, 799.90, 5, 1, 12),
+(13, 6, 899.90, 5, 1, 13),
+(14, 15, 199.90, 6, 1, 14),
+(15, 15, 79250.90, 8, 1, 15);
+
+INSERT INTO declinaison_meuble (stock, prix_declinaison, couleur_id, taille_id, meuble_id)
+SELECT 
+    m.stock, 
+    m.prix_meuble,
+    9, 
+    1, 
+    m.id_meuble
+FROM meuble m
+LEFT JOIN declinaison_meuble dm ON m.id_meuble = dm.meuble_id
+WHERE dm.meuble_id IS NULL;
 
 INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-20 10:30:00', 2, 4),
@@ -306,7 +321,7 @@ INSERT INTO commande (date_achat, utilisateur_id, etat_id) VALUES
 ('2026-01-29 12:27:00', 3, 4),
 ('2026-01-23 14:15:00', 3, 1);
 
-INSERT INTO ligne_commande (commande_id, id_declinaison_meuble, prix, quantite) VALUES
+INSERT INTO ligne_commande (commande_id, meuble_declinaison_id, prix, quantite) VALUES
 (1, 1, 129.00, 4),
 (1, 6, 550.00, 1),
 (7, 15, 520.99, 10),
@@ -361,7 +376,7 @@ INSERT INTO ligne_commande (commande_id, id_declinaison_meuble, prix, quantite) 
 (10, 2, 690.0, 8),
 (2, 13, 115.00, 1);
 
-INSERT INTO ligne_panier (utilisateur_id, id_declinaison_meuble, quantite, date_ajout) VALUES
+INSERT INTO ligne_panier (utilisateur_id, meuble_declinaison_id, quantite, date_ajout) VALUES
 # Ajoute
 (2, 1, 3, '2026-01-24 19:25:00'),
 (3, 8, 1, '2026-01-24 15:32:00'),

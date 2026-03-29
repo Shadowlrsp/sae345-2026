@@ -10,26 +10,29 @@ client_article = Blueprint('client_article', __name__,
 
 
 @client_article.route('/client/index')
-@client_article.route('/client/article/show')  # remplace /client
-def client_article_show():  # remplace client_index
+@client_article.route('/client/article/show')
+def client_article_show():
     mycursor = get_db().cursor()
     id_client = session['id_user']
 
     sql = '''SELECT m.id_meuble AS id_article,
        m.nom_meuble AS nom,
-       m.prix_meuble AS prix,
-       m.stock,
+       MIN(dm.prix_declinaison) AS prix,
+       SUM(dm.stock) AS stock,
        m.photo AS image,
        ma.libelle_materiau AS libelle_materiau,
        t.libelle_type_meuble AS libelle_type_meuble,
-       t.id_type_meuble AS type_meuble_id
+       t.id_type_meuble AS type_meuble_id,
+       COUNT(dm.id_declinaison_meuble) AS nb_declinaison
        FROM meuble m
        LEFT JOIN materiau ma ON m.materiau_id = ma.id_materiau
        LEFT JOIN type_meuble t ON m.type_meuble_id = t.id_type_meuble
+       LEFT JOIN declinaison_meuble dm ON m.id_meuble = dm.meuble_id
     '''
 
     list_param = []
     condition_and = []
+
 
     if session.get('filter_word'):
         condition_and.append(" m.nom_meuble LIKE %s ")
@@ -51,7 +54,16 @@ def client_article_show():  # remplace client_index
     if len(condition_and) > 0:
         sql += " WHERE " + " AND ".join(condition_and)
 
-    sql += " ORDER BY m.nom_meuble ;"
+    sql += """ GROUP BY 
+               m.id_meuble, 
+               m.nom_meuble, 
+               m.prix_meuble, 
+               m.stock, 
+               m.photo, 
+               ma.libelle_materiau, 
+               t.libelle_type_meuble, 
+               t.id_type_meuble
+               ORDER BY m.nom_meuble; """
 
     # Note : Le GROUP BY est inutile ici car il n'y a plus de calcul de moyenne
     # On retire le GROUP BY car il n'y a plus de fonction d'agrégation (AVG, COUNT)
@@ -72,24 +84,33 @@ def client_article_show():  # remplace client_index
     types_article = mycursor.fetchall()
 
     sql_panier = '''
-            SELECT m.id_meuble AS id_article,
+            SELECT lp.meuble_declinaison_id AS id_article,
                    m.nom_meuble AS nom,
-                   m.prix_meuble AS prix,
-                   m.stock,         
+                   d.prix_declinaison AS prix,
+                   d.stock,         
                    lp.quantite,
-                   (m.prix_meuble * lp.quantite) AS total_ligne
+                   (d.prix_declinaison * lp.quantite) AS total_ligne,
+                   c.id_couleur,
+                   c.libelle_couleur,
+                   ta.id_taille,
+                   ta.libelle_taille
             FROM ligne_panier lp
-            JOIN meuble m ON m.id_meuble = lp.meuble_id
+            JOIN declinaison_meuble d ON lp.meuble_declinaison_id = d.id_declinaison_meuble
+            JOIN meuble m ON d.meuble_id = m.id_meuble
+            LEFT JOIN couleur c ON d.couleur_id = c.id_couleur
+            LEFT JOIN taille ta ON d.taille_id = ta.id_taille
             WHERE lp.utilisateur_id = %s
         '''
     mycursor.execute(sql_panier, (id_client,))
     articles_panier = mycursor.fetchall()
 
     if len(articles_panier) >= 1:
-        sql_total = ''' SELECT SUM(m.prix_meuble * lp.quantite) AS prix_total
+        sql_total = ''' 
+                  SELECT SUM(d.prix_declinaison * lp.quantite) AS prix_total
                   FROM ligne_panier lp
-                  JOIN meuble m ON m.id_meuble = lp.meuble_id
-                  WHERE lp.utilisateur_id = %s '''
+                  JOIN declinaison_meuble d ON d.id_declinaison_meuble = lp.meuble_declinaison_id
+                  WHERE lp.utilisateur_id = %s 
+        '''
         mycursor.execute(sql_total, (id_client,))
         result = mycursor.fetchone()
         prix_total = result['prix_total']

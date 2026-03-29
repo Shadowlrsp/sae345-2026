@@ -24,7 +24,7 @@ def admin_commande_show():
                u.login,
                c.date_achat,
                e.libelle,
-               COUNT(lc.meuble_id) AS nbr_articles,
+               COUNT(lc.id_declinaison_meuble) AS nbr_articles,
                SUM(lc.prix * lc.quantite) AS prix_total,
                c.etat_id
         FROM commande c
@@ -43,13 +43,13 @@ def admin_commande_show():
     print(id_commande)
     if id_commande != None:
         sql_articles = '''
-            SELECT lc.meuble_id,
+            SELECT lc.id_declinaison_meuble,
                 m.nom_meuble AS nom,
                 lc.quantite,
                 lc.prix,
                 (lc.prix * lc.quantite) AS prix_ligne
             FROM ligne_commande lc
-            JOIN meuble m ON lc.meuble_id = m.id_meuble
+            JOIN meuble m ON lc.id_declinaison_meuble = m.id_meuble
             WHERE lc.commande_id = %s;
         '''
         mycursor.execute(sql_articles, (id_commande,))
