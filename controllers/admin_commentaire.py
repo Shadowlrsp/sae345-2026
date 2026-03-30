@@ -53,12 +53,14 @@ def admin_comment_delete():
     id_article = request.form.get('id_article', None)
     date_publication = request.form.get('date_publication', None)
     sql = '''
-    DELETE FROM commentaire
-    WHERE utilisateur_id = %s
-    AND meuble_id = %s
-    AND date_publication = %s
-    '''
-    mycursor.execute(sql, (id_utilisateur, id_article, date_publication))
+          DELETE
+          FROM commentaire
+          WHERE meuble_id = %s AND date_publication = %s
+          '''
+    #print("USER:", id_utilisateur)
+    #print("ARTICLE:", id_article)
+    #print("DATE:", date_publication)
+    mycursor.execute(sql, (id_article,date_publication))
     get_db().commit()
     return redirect('/admin/article/commentaires?id_article='+id_article)
 
