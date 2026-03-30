@@ -121,7 +121,9 @@ ADD CONSTRAINT fk_note_meuble FOREIGN KEY (meuble_id) REFERENCES meuble(id_meubl
 INSERT INTO utilisateur(id_utilisateur, login, email, password, role, nom, est_actif) VALUES
 (1,'admin','admin@admin.fr','scrypt:32768:8:1$irSP6dJEjy1yXof2$56295be51bb989f467598b63ba6022405139656d6609df8a71768d42738995a21605c9acbac42058790d30fd3adaaec56df272d24bed8385e66229c81e71a4f4','ROLE_admin','admin',1),
 (2,'client','client@client.fr','scrypt:32768:8:1$iFP1d8bdBmhW6Sgc$7950bf6d2336d6c9387fb610ddaec958469d42003fdff6f8cf5a39cf37301195d2e5cad195e6f588b3644d2a9116fa1636eb400b0cb5537603035d9016c15910','ROLE_client','client',1),
-(3,'client2','client2@client2.fr','scrypt:32768:8:1$l3UTNxiLZGuBKGkg$ae3af0d19f0d16d4a495aa633a1cd31ac5ae18f98a06ace037c0f4fb228ed86a2b6abc64262316d0dac936eb72a67ae82cd4d4e4847ee0fb0b19686ee31194b3','ROLE_client','client2',1);
+(3,'client2','client2@client2.fr','scrypt:32768:8:1$l3UTNxiLZGuBKGkg$ae3af0d19f0d16d4a495aa633a1cd31ac5ae18f98a06ace037c0f4fb228ed86a2b6abc64262316d0dac936eb72a67ae82cd4d4e4847ee0fb0b19686ee31194b3','ROLE_client','client2',1),
+(4,'client3','client3@client3.fr','scrypt:32768:8:1$hq8diH3ymWIQK8o3$8a820843c6762144a5356158f2a953e46ecccbfd013be6e01e6d266fb17e885e0d77e61fa45885c0790763c7b2aa905b722020dceae5565f5c7d4695742ef367','ROLE_client','client3',1),
+(5,'client4','client4@client4.fr','scrypt:32768:8:1$VRITasYBAWBhbDks$f7179bbaa23906a27406050350a430086c04a6aef9fbcd3f48884262e6762eb3ef1c1edcf55b0b2b43fd0636860b83fafc364ecb321a3f1a9f7da7cb8c0e872e','ROLE_client','client4',1);
 
 INSERT INTO etat (libelle) VALUES ('En attente'), ('En préparation'), ('Expédié'), ('Livré'), ('Annulé');
 INSERT INTO materiau (libelle_materiau) VALUES ('Chêne Massif'), ('Acier'), ('Velours'), ('Marbre'), ('Métal'),('Bronze'),('Laiton');
@@ -355,6 +357,26 @@ INSERT INTO note (utilisateur_id, meuble_id, note, date_note) VALUES
 (3, 28, 5, '2026-03-14 13:15:00'),
 (2, 29, 5, '2026-03-14 15:00:00'),
 (3, 30, 4, '2026-03-14 17:30:00');
+INSERT INTO note (utilisateur_id, meuble_id, note, date_note) VALUES
+-- client3
+(4,1,4,'2026-03-15 10:00:00'),
+(4,2,5,'2026-03-15 11:00:00'),
+(4,3,3,'2026-03-15 12:00:00'),
+(4,4,5,'2026-03-16 09:00:00'),
+(4,6,4,'2026-03-16 10:30:00'),
+(4,8,5,'2026-03-16 14:00:00'),
+(4,18,3,'2026-03-17 09:45:00'),
+(4,21,4,'2026-03-17 11:00:00'),
+
+-- client4
+(5,1,5,'2026-03-15 13:00:00'),
+(5,2,4,'2026-03-15 14:00:00'),
+(5,5,4,'2026-03-16 15:00:00'),
+(5,7,5,'2026-03-16 16:00:00'),
+(5,15,5,'2026-03-17 10:00:00'),
+(5,19,4,'2026-03-17 11:30:00'),
+(5,23,5,'2026-03-17 13:00:00'),
+(5,30,4,'2026-03-17 15:00:00');
 
 INSERT INTO commentaire (utilisateur_id, meuble_id, commentaire, valider, date_publication) VALUES
 (2,1,'Chaise très confortable et élégante',1,'2026-03-05 10:00:00'),
@@ -386,5 +408,25 @@ INSERT INTO commentaire (utilisateur_id, meuble_id, commentaire, valider, date_p
 (2, 29, 'Style industriel chic, l''éclairage LED est puissant mais agréable.', 1, '2026-03-14 15:15:00'),
 (3, 30, 'Lumière très douce, parfait pour une ambiance tamisée.', 1, '2026-03-14 17:45:00');
 
+INSERT INTO commentaire (utilisateur_id, meuble_id, commentaire, valider, date_publication) VALUES
+-- client3
+(4,1,'Bonne chaise, confortable au quotidien.',1,'2026-03-15 10:05:00'),
+(4,2,'Très joli design, correspond bien à la description.',1,'2026-03-15 11:10:00'),
+(4,3,'Correct mais j''attendais mieux pour le prix.',1,'2026-03-15 12:10:00'),
+(4,4,'Super rendu dans mon salon, très satisfait.',1,'2026-03-16 09:10:00'),
+(4,6,'Bonne qualité globale, assise agréable.',1,'2026-03-16 10:40:00'),
+(4,8,'Excellente qualité du cuir, très durable.',1,'2026-03-16 14:10:00'),
+(4,18,'Couleur un peu différente mais reste joli.',1,'2026-03-17 09:50:00'),
+(4,21,'Pratique pour le rangement, je recommande.',1,'2026-03-17 11:10:00'),
+
+-- client4
+(5,1,'Parfaite, rien à redire.',1,'2026-03-15 13:10:00'),
+(5,2,'Bon produit mais livraison un peu longue.',1,'2026-03-15 14:10:00'),
+(5,5,'Très stable et solide, bon achat.',1,'2026-03-16 15:10:00'),
+(5,7,'Design élégant, facile à monter.',1,'2026-03-16 16:10:00'),
+(5,15,'Magnifique pièce, effet garanti.',1,'2026-03-17 10:10:00'),
+(5,19,'Grande table pratique pour famille.',1,'2026-03-17 11:40:00'),
+(5,23,'Bois de très bonne qualité.',1,'2026-03-17 13:10:00'),
+(5,30,'Ambiance parfaite avec cette lumière.',1,'2026-03-17 15:10:00');
 ######################
 ######################

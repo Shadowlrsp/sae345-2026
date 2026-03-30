@@ -24,16 +24,19 @@ def dataviz_commentaires():
 
     if type_id:
         sql = '''
-            SELECT m.nom_meuble,
-                   COUNT(DISTINCT n.utilisateur_id) AS nb_notes,
-                   ROUND(AVG(n.note),2) AS moyenne_note,
-                   COUNT(DISTINCT c.date_publication) AS nb_commentaires
-            FROM meuble m
-            LEFT JOIN note n ON n.meuble_id = m.id_meuble
-            LEFT JOIN commentaire c ON c.meuble_id = m.id_meuble
-            WHERE m.type_meuble_id = %s
-            GROUP BY m.id_meuble, m.nom_meuble
-        '''
+              SELECT m.nom_meuble,
+                     COUNT(DISTINCT n.utilisateur_id) AS nb_notes,
+                     ROUND(AVG(n.note), 2) AS moyenne_note,
+                     COUNT(DISTINCT \
+                           CONCAT(c.utilisateur_id, '-', c.meuble_id, '-', c.date_publication)) AS nb_commentaires
+              FROM meuble m
+                       LEFT JOIN note n ON n.meuble_id = m.id_meuble
+                       LEFT JOIN commentaire c ON c.meuble_id = m.id_meuble
+                       LEFT JOIN utilisateur u ON u.id_utilisateur = c.utilisateur_id
+              WHERE m.type_meuble_id = %s
+                AND (u.role IS NULL OR u.role = 'ROLE_client')
+              GROUP BY m.id_meuble, m.nom_meuble
+              '''
         mycursor.execute(sql, (type_id,))
         datas = mycursor.fetchall()
 

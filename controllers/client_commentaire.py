@@ -135,8 +135,8 @@ def client_comment_add():
     sql = '''
           SELECT COUNT(*) AS nb_commentaires
           FROM commentaire
-          WHERE utilisateur_id = %s \
-            AND meuble_id = %s \
+          WHERE utilisateur_id = %s
+          AND meuble_id = %s 
           '''
     mycursor.execute(sql, (id_client, id_article))
     nb_commentaires = mycursor.fetchone()

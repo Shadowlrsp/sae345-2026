@@ -1,6 +1,6 @@
 #! /usr/bin/python
 # -*- coding:utf-8 -*-
-from flask import Blueprint
+from flask import Blueprint, flash
 from flask import Flask, request, render_template, redirect, session
 from connexion_db import get_db
 
@@ -33,8 +33,7 @@ def admin_article_details():
     article = mycursor.fetchone()
 
     sql = '''
-    SELECT COUNT(*) AS nb_commentaires_total,
-           SUM(CASE WHEN valider = 1 THEN 1 ELSE 0 END) AS nb_commentaires_valider
+    SELECT COUNT(*) AS nb_commentaires_total,SUM(valider) AS nb_commentaires_valider
     FROM commentaire
     WHERE meuble_id = %s
     '''
@@ -100,4 +99,5 @@ def admin_comment_valider():
     '''
     mycursor.execute(sql, (id_article,))
     get_db().commit()
+    flash(u'Commentaires validés avec succès', 'alert-success')
     return redirect('/admin/article/commentaires?id_article='+id_article)
