@@ -64,6 +64,22 @@ def admin_commande_show():
         mycursor.execute(sql_client, (id_commande,))
         commande_adresses = mycursor.fetchone()
 
+        sql_adresses ='''
+            SELECT
+                al.nom AS nom_liv, al.rue AS rue_liv, al.code_postal AS cp_liv, al.ville AS ville_liv,
+                af.nom AS nom_fac, af.rue AS rue_fac, af.code_postal AS cp_fac, af.ville AS ville_fac
+            FROM commande c
+            LEFT JOIN adresse al ON c.adresse_livraison_id = al.id_adresse
+            LEFT JOIN adresse af ON c.adresse_facturation_id = af.id_adresse
+            WHERE c.id_commande = %s;
+        '''
+
+        mycursor.execute(sql_adresses, (id_commande,))
+        adresses_complement = mycursor.fetchone()
+
+        if commande_adresses and adresses_complement:
+            commande_adresses.update(adresses_complement)
+
     return render_template('admin/commandes/show.html'
                            , commandes=commandes
                            , articles_commande=articles_commande

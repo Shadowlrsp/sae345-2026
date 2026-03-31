@@ -387,4 +387,28 @@ INSERT INTO commentaire (utilisateur_id, meuble_id, commentaire, valider, date_p
 (3, 30, 'Lumière très douce, parfait pour une ambiance tamisée.', 1, '2026-03-14 17:45:00');
 
 ######################
+### Partie 3 Gossiaux Mathis
 ######################
+
+DROP TABLE IF EXISTS adresse;
+
+CREATE TABLE adresse (
+  id_adresse INT NOT NULL AUTO_INCREMENT,
+  utilisateur_id INT NOT NULL,
+  nom VARCHAR(255) NOT NULL,
+  rue VARCHAR(255) NOT NULL,
+  code_postal VARCHAR(5) NOT NULL,
+  ville VARCHAR(255) NOT NULL,
+  valide INT(1) NOT NULL DEFAULT 1,
+  est_favorite INT(1) NOT NULL DEFAULT 0,
+  PRIMARY KEY (id_adresse),
+  CONSTRAINT fk_adr_uti FOREIGN KEY (utilisateur_id) REFERENCES utilisateur(id_utilisateur)
+);
+
+ALTER TABLE commande
+ADD COLUMN adresse_livraison_id INT,
+ADD COLUMN adresse_facturation_id INT;
+
+ALTER TABLE commande
+ADD CONSTRAINT fk_cmd_adr_liv FOREIGN KEY (adresse_livraison_id) REFERENCES adresse(id_adresse),
+ADD CONSTRAINT fk_cmd_adr_fac FOREIGN KEY (adresse_facturation_id) REFERENCES adresse(id_adresse);
