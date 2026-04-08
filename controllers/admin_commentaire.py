@@ -13,31 +13,41 @@ def admin_article_details():
     id_article = request.args.get('id_article', None)
 
     sql = '''
-    SELECT c.utilisateur_id, c.meuble_id AS id_article, u.login AS nom, c.commentaire, c.valider, c.date_publication
-    FROM commentaire c
-    JOIN utilisateur u ON u.id_utilisateur = c.utilisateur_id
-    WHERE c.meuble_id = %s
-    ORDER BY c.valider ASC, c.date_publication DESC
-    '''
+          SELECT c.commentaire,
+                 c.date_publication,
+                 IFNULL(c.valider, 0) AS valider,
+                 c.utilisateur_id,
+                 c.utilisateur_id AS id_utilisateur,
+                 u.login AS nom,
+                 c.meuble_id AS id_article
+          FROM commentaire c
+          JOIN utilisateur u ON c.utilisateur_id = u.id_utilisateur
+          WHERE c.meuble_id = %s
+          ORDER BY c.date_publication DESC, c.utilisateur_id DESC;
+          '''
     mycursor.execute(sql, (id_article,))
     commentaires = mycursor.fetchall()
-
+    #print("test de validation " + commentaires.valider)
     sql = '''
-    SELECT id_meuble AS id_article, nom_meuble AS nom, prix_meuble AS prix, photo AS image, description,
-           (SELECT AVG(note) FROM note WHERE meuble_id = m.id_meuble) AS moyenne_notes,
-           (SELECT COUNT(*) FROM note WHERE meuble_id = m.id_meuble) AS nb_notes
-    FROM meuble m
-    WHERE m.id_meuble = %s
-    '''
+          SELECT id_meuble AS id_article,
+                 nom_meuble AS nom,
+                 prix_meuble AS prix,
+                 photo AS image,
+                 description,
+                 (SELECT AVG(note) FROM note WHERE meuble_id = m.id_meuble) AS moyenne_notes,
+                 (SELECT COUNT(*) FROM note WHERE meuble_id = m.id_meuble)  AS nb_notes
+          FROM meuble m
+          WHERE m.id_meuble = %s
+          '''
     mycursor.execute(sql, (id_article,))
     article = mycursor.fetchone()
-
     sql = '''
-    SELECT COUNT(*) AS nb_commentaires_total,SUM(valider) AS nb_commentaires_valider
-    FROM commentaire
-    WHERE meuble_id = %s
-    '''
-    mycursor.execute(sql, (id_article,))
+          SELECT COUNT(*) AS nb_commentaires_total,
+                 SUM(valider) AS nb_commentaires_valider
+          FROM commentaire
+          WHERE meuble_id = %s AND utilisateur_id != %s
+          '''
+    mycursor.execute(sql, (id_article,session['id_user']))
     nb_commentaires = mycursor.fetchone()
 
     return render_template('admin/article/show_article_commentaires.html',
@@ -77,14 +87,13 @@ def admin_comment_add():
     mycursor = get_db().cursor()
     id_admin = session['id_user']
     id_article = request.form.get('id_article', None)
-    id_utilisateur = request.form.get('id_utilisateur', None)
     date_publication = request.form.get('date_publication', None)
     commentaire = request.form.get('commentaire', None)
     sql = '''
     INSERT INTO commentaire(commentaire, utilisateur_id, meuble_id, date_publication, valider)
-    VALUES (%s, %s, %s, NOW(), 1)
+    VALUES (%s, %s, %s, %s, 1)
     '''
-    mycursor.execute(sql, (commentaire, id_admin, id_article))
+    mycursor.execute(sql, (commentaire, id_admin, id_article, date_publication))
     get_db().commit()
     return redirect('/admin/article/commentaires?id_article='+id_article)
 

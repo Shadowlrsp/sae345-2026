@@ -18,12 +18,21 @@ admin_article = Blueprint('admin_article', __name__,
 def show_article():
     mycursor = get_db().cursor()
     # admin_article_1 : Liste des meubles avec leur type et stock
-    sql = '''SELECT m.id_meuble AS id_article, m.nom_meuble AS nom, m.prix_meuble AS prix, 
-                    m.stock, m.photo AS image, t.libelle_type_meuble AS libelle
-             FROM meuble m
-             JOIN type_meuble t ON m.type_meuble_id = t.id_type_meuble
-             ORDER BY m.nom_meuble;
-    '''
+    sql = '''
+          SELECT m.id_meuble AS id_article,
+                 m.nom_meuble AS nom,
+                 m.prix_meuble AS prix,
+                 m.stock,
+                 m.photo AS image,
+                 m.type_meuble_id AS type_article_id,
+                 t.libelle_type_meuble AS libelle,
+                 COUNT(c.date_publication) AS nb_commentaires_nouveaux
+          FROM meuble m
+          JOIN type_meuble t ON m.type_meuble_id = t.id_type_meuble
+          LEFT JOIN commentaire c ON c.meuble_id = m.id_meuble AND c.valider = 0
+          GROUP BY m.id_meuble, m.nom_meuble, m.prix_meuble, m.stock, m.photo, m.type_meuble_id, t.libelle_type_meuble
+          ORDER BY m.nom_meuble; 
+          '''
     mycursor.execute(sql)
     articles = mycursor.fetchall()
     return render_template('admin/article/show_article.html', articles=articles)

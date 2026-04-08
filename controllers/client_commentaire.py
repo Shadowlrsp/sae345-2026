@@ -47,17 +47,17 @@ def client_article_details():
         abort(404, "pb id article")
 
     sql = '''
-    SELECT c.meuble_id AS id_article,
-           c.utilisateur_id AS id_utilisateur,
-           u.login AS nom,
-           c.commentaire,
-           c.valider,
-           c.date_publication
-    FROM commentaire c
-    JOIN utilisateur u ON u.id_utilisateur = c.utilisateur_id
-    WHERE c.meuble_id = %s
-    ORDER BY c.date_publication DESC
-    '''
+          SELECT c.meuble_id      AS id_article,
+                 c.utilisateur_id AS id_utilisateur,
+                 u.login          AS nom,
+                 c.commentaire,
+                 c.valider,
+                 c.date_publication
+          FROM commentaire c
+                   JOIN utilisateur u ON u.id_utilisateur = c.utilisateur_id
+          WHERE c.meuble_id = %s
+          ORDER BY c.date_publication DESC, c.utilisateur_id DESC; \
+          '''
     mycursor.execute(sql, (id_article,))
     commentaires = mycursor.fetchall()
 
@@ -85,25 +85,29 @@ def client_article_details():
         note = None
 
     print('note récupérée :', note)
-
     sql = '''
-    SELECT
-    (SELECT COUNT(*) 
-    FROM commentaire 
-    WHERE meuble_id=%s) AS nb_commentaires_total,
+          SELECT (SELECT COUNT(*) 
+                  FROM commentaire 
+                  WHERE meuble_id = %s
+                    AND utilisateur_id != 1) AS nb_commentaires_total, 
 
-    (SELECT COUNT(*) 
-    FROM commentaire 
-    WHERE meuble_id=%s AND utilisateur_id=%s) AS nb_commentaires_utilisateur,
+                 (SELECT COUNT(*) 
+                  FROM commentaire 
+                  WHERE meuble_id = %s 
+                    AND utilisateur_id = %s) AS nb_commentaires_utilisateur,
 
-    (SELECT COUNT(*) 
-    FROM commentaire 
-    WHERE meuble_id=%s AND valider=1) AS nb_commentaires_total_valide,
+                 (SELECT COUNT(*) 
+                  FROM commentaire
+                  WHERE meuble_id = %s
+                    AND valider = 1
+                    AND utilisateur_id != 1) AS nb_commentaires_total_valide, 
 
-    (SELECT COUNT(*) 
-    FROM commentaire 
-    WHERE meuble_id=%s AND utilisateur_id=%s AND valider=1) AS nb_commentaires_utilisateur_valide
-    '''
+                 (SELECT COUNT(*) 
+                  FROM commentaire
+                  WHERE meuble_id = %s
+                    AND utilisateur_id = %s
+                    AND valider = 1) AS nb_commentaires_utilisateur_valide \
+          '''
     mycursor.execute(sql, (id_article, id_article, id_client, id_article, id_article, id_client))
     nb_commentaires = mycursor.fetchone()
     if nb_commentaires is None:
