@@ -1,0 +1,53 @@
+{% extends 'auth/layout.html' %}
+
+{% block title %}Connexion{% endblock %}
+
+{% block body %}
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-lg border-0" style="border-radius: 15px;">
+            <div class="card-body p-5">
+
+                <div class="text-center mb-4">
+                    <h2 class="font-weight-bold text-dark">Bon retour !</h2>
+                    <p class="text-muted">Veuillez vous connecter à votre compte</p>
+                </div>
+
+                <form method="post" action="/login">
+
+                    <div class="form-group mb-3">
+                        <label for="inputlogin" class="font-weight-bold text-secondary">Pseudo</label>
+                        <div class="input-group shadow-sm">
+                            <input type="text" name="login" id="inputlogin" class="form-control border-left-0 pl-0"
+                                required autofocus placeholder="Votre pseudo">
+                        </div>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label for="inputPassword" class="font-weight-bold text-secondary">Mot de passe</label>
+                        <div class="input-group shadow-sm">
+                            <input type="password" name="password" id="inputPassword"
+                                class="form-control border-left-0 pl-0" required placeholder="Votre mot de passe">
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-block btn-lg rounded-pill shadow-sm font-weight-bold w-100"
+                        type="submit">
+                        Se connecter
+                    </button>
+                    <div class="text-center">
+                        <span class="text-muted">Pas encore de compte ?</span> <a href="/forget-password"
+                            class="text-primary font-weight-bold">Cliquer ici</a>
+                    </div>
+
+                </form>
+
+            </div>
+            <div class="card-footer bg-light text-center py-3 border-0" style="border-radius: 0 0 15px 15px;">
+                <span class="text-muted">Pas encore de compte ?</span> <a href="/signup"
+                    class="text-primary font-weight-bold">S'inscrire</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

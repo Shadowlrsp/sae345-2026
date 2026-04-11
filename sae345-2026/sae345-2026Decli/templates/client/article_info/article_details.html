@@ -1,0 +1,182 @@
+{% extends "client/layout_client.html" %}
+
+{% block stylesheets %}
+{{ super() }}
+{% endblock %}
+
+{% block body %}
+<div class="container my-5">
+
+    <a href="/client/article/show" class="btn btn-outline-secondary mb-4">
+        Retour à la boutique
+    </a>
+
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="row no-gutters align-items-center">
+            <div class="col-md-4 text-center p-4">
+                {% if article.image is not none %}
+                <img class="img-fluid rounded" style="max-height: 250px;"
+                    src="{{ url_for('static', filename='images/' ~ article.image) }}" alt="image de {{ article.nom }}">
+                {% else %}
+                <img class="img-fluid rounded" style="max-height: 250px;"
+                    src="{{ url_for('static', filename='images/no_photo.jpeg') }}" alt="pas d'image">
+                {% endif %}
+            </div>
+
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h2 class="card-title text-success font-weight-bold">{{ article.nom }}</h2>
+                    <h3 class="text-dark mb-4">{{ article.prix }} €</h3>
+
+                    <h4 class="text-muted border-bottom pb-2 mb-3">Description</h4>
+                    <p class="card-text text-justify">{{ article.description }}</p>
+
+                    {% if commandes_articles.nb_commandes_article is defined and commandes_articles.nb_commandes_article
+                    > 0 %}
+                    <div class="alert alert-info d-inline-block mt-3 px-4 py-2">
+                        Vous avez déjà acheté cet article <strong>{{ commandes_articles.nb_commandes_article }}
+                            fois</strong>.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-sm border-0 h-100 bg-light">
+                <div class="card-body">
+                    <h4 class="card-title text-dark mb-4">Évaluation globale</h4>
+
+                    <div class="text-center mb-4">
+                        {% if article.moyenne_notes is not defined or article.moyenne_notes == None %}
+                        <h4 class="text-muted">Aucune note pour le moment</h4>
+                        {% else %}
+                        <h1 class="display-4 text-warning font-weight-bold mb-0">{{
+                            "{:,.1f}".format(article.moyenne_notes) }}</h1>
+                        <p class="text-muted">sur 5 ({{ article.nb_notes }} avis)</p>
+                        {% endif %}
+                    </div>
+
+                    <hr>
+
+                    {% if commandes_articles.nb_commandes_article is defined and commandes_articles.nb_commandes_article
+                    > 0 %}
+                    {% if note is defined and note is number %}
+                    <h6 class="text-muted mb-3">Votre note actuelle : <strong class="text-warning">{{ note }} /
+                            5</strong></h6>
+                    <form action="/client/note/edit" method="post" class="mb-2">
+                        <input type="hidden" name="id_article" value="{{ article.id_article }}">
+                        <div class="input-group">
+                            <input type="number" name="note" step="1" min="1" max="5" class="form-control"
+                                value="{{ note }}">
+                            <div class="input-group-append">
+                                <button class="btn btn-warning text-white" type="submit">Modifier</button>
+                            </div>
+                        </div>
+                    </form>
+                    <form action="/client/note/delete" method="post">
+                        <input type="hidden" name="id_article" value="{{ article.id_article }}">
+                        <button class="btn btn-sm btn-outline-danger w-100">Supprimer ma note</button>
+                    </form>
+                    {% else %}
+                    <form action="/client/note/add" method="post">
+                        <input type="hidden" name="id_article" value="{{ article.id_article }}">
+                        <label class="font-weight-bold">Noter cet article :</label>
+                        <div class="input-group">
+                            <input type="number" name="note" step="1" min="1" max="5" class="form-control"
+                                placeholder="Note sur 5" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-success" type="submit">Valider</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                    {% else %}
+                    <div class="alert alert-warning text-center small mb-0">
+                        Seuls les clients ayant acheté cet article peuvent le noter.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white pt-4 pb-2 border-0 d-flex justify-content-between align-items-center">
+                    <h2 class="card-title text-dark mb-0">Commentaires clients</h2>
+
+                    {% if nb_commentaires.nb_commentaires_total is defined %}
+                    <span class="badge badge-success px-3 py-2">{{ nb_commentaires.nb_commentaires_total }} avis</span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+
+                    {% if commandes_articles.nb_commandes_article is defined and commandes_articles.nb_commandes_article
+                    > 0 and ((nb_commentaires.nb_commentaires_utilisateur is defined and
+                    nb_commentaires.nb_commentaires_utilisateur < 3) or nb_commentaires.nb_commentaires_utilisateur is
+                        not defined) %} <form action="/client/commentaire/add" method="post"
+                        class="mb-4 bg-light p-3 rounded">
+                        <input type="hidden" name="id_article" value="{{ article.id_article }}">
+                        <div class="form-group mb-2">
+                            <label for="input_commentaire" class="font-weight-bold small text-muted">Ajouter un
+                                commentaire (Max 3/article) :</label>
+                            <textarea name="commentaire" class="form-control" id="input_commentaire" rows="2"
+                                placeholder="Partagez votre avis sur ce meuble..." required></textarea>
+                        </div>
+                        <div class="text-right">
+                            <button class="btn btn-sm btn-success" type="submit">Publier</button>
+                        </div>
+                        </form>
+                        {% endif %}
+
+                        <div class="list-group list-group-flush">
+                            {% if commentaires %}
+                            {% for commentaire in commentaires %}
+                            <div class="list-group-item px-0 py-3">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong class="text-dark">
+                                        {{ commentaire.nom }}
+                                        {% if commentaire.valider == 1 %}
+                                        <i class="fas fa-check-circle text-success ml-1" title="Commentaire validé"></i>
+                                        {% endif %}
+                                    </strong>
+                                    <small class="text-muted">{{ commentaire.date_publication.strftime('%d/%m/%Y') if
+                                        commentaire.date_publication else '' }}</small>
+                                </div>
+
+                                <p class="mb-2 text-dark">
+                                    {% if commentaire.utilisateur_id == 1 %}
+                                    <strong class="text-danger">Réponse Admin :</strong>
+                                    {% endif %}
+                                    {{ commentaire.commentaire }}
+                                </p>
+
+                                {% if commentaire.id_utilisateur == session['id_user'] %}
+                                <form action="/client/commentaire/delete" method="post" class="text-right">
+                                    <input type="hidden" name="id_article" value="{{ commentaire.id_article }}">
+                                    <input type="hidden" name="id_utilisateur" value="{{ commentaire.id_utilisateur }}">
+                                    <input type="hidden" name="date_publication"
+                                        value="{{ commentaire.date_publication }}">
+                                    <button class="btn btn-link text-danger p-0 small"
+                                        style="font-size: 0.85rem;">Supprimer mon avis</button>
+                                </form>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                            {% else %}
+                            <div class="text-center py-4">
+                                <p class="text-muted">Aucun commentaire pour le moment. Soyez le premier à donner votre
+                                    avis !</p>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

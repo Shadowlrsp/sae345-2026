@@ -1,0 +1,190 @@
+{% extends 'admin/layout_admin.html' %}
+
+{% block title %}
+<title>Modifier un article</title>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <h2 class="mb-4">Modifier l'article : <span class="text-success">{{ article.nom }}</span></h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        {% if article.image is not none %}
+                        <img class="img-thumbnail" style="width:200px; height:200px; object-fit: contain;"
+                            id="img_output" src="{{ url_for('static', filename = 'images/') }}{{ article.image}}"
+                            alt="image de {{ article.nom }}">
+                        {% else %}
+                        <img class="img-thumbnail" style="width:200px; height:200px; object-fit: contain;"
+                            id="img_output" src="{{ url_for('static', filename = 'images/no_photo.jpeg') }}"
+                            alt="aucune photo">
+                        {% endif %}
+                    </div>
+
+                    <form method="post" action="/admin/article/edit" enctype="multipart/form-data">
+                        <input type="hidden" value="{{ article.id_article }}" name="id_article">
+
+                        <div class="form-group mb-2">
+                            <label for="nom" class="font-weight-bold">Nom :</label>
+                            <input id="nom" name="nom" type="text" value="{{ article.nom }}" class="form-control">
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <label for="prix" class="font-weight-bold">Prix (€) :</label>
+                            <input id="prix" name="prix" type="number" min="0.0" step="0.01" value="{{ article.prix }}"
+                                class="form-control">
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <label for="image" class="font-weight-bold">Changer l'image :</label>
+                            <input id="image" name="image" onchange="loadFile(event)" type="file" class="form-control">
+                        </div>
+
+                        <div class="form-group mb-2">
+                            <label for="type_article_id" class="font-weight-bold">Type :</label>
+                            <select id="type_article_id" name="type_article_id" class="form-control custom-select">
+                                {% for type in types_article %}
+                                <option value="{{ type.id_type_article }}" {% if
+                                    type.id_type_article==article.type_article_id %}selected{% endif %}>
+                                    {{ type.libelle }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="description" class="font-weight-bold">Description :</label>
+                            <input id="description" name="description" type="text" value="{{ article.description }}"
+                                class="form-control">
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-3">
+                            <button class="btn btn-primary px-4 shadow-sm font-weight-bold">Enregistrer</button>
+                            <a class="btn btn-secondary px-4 shadow-sm" href="/admin/article/show">Retour</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center py-3 border-bottom">
+                    <h3 class="mb-0 text-dark font-weight-bold" style="font-size: 1.5rem;">Déclinaisons (Variantes)</h3>
+                    <a class="btn btn-success shadow-sm font-weight-bold"
+                        href="/admin/declinaison_article/add?id_article={{ article.id_article }}">
+                        Ajouter une variante
+                    </a>
+                </div>
+
+                <div class="card-body">
+                    {% if pb_taille_uniq == 1 or pb_couleur_uniq == 1 %}
+                    <div class="alert alert-warning border-warning shadow-sm mb-4 text-dark font-weight-bold">
+                        <strong>Attention :</strong>
+                        {% if pb_taille_uniq == 1 %}
+                        <br>- Conflit sur les tailles : "Taille Unique" ne peut pas coexister avec d'autres tailles.
+                        {% endif %}
+                        {% if pb_couleur_uniq == 1 %}
+                        <br>- Conflit sur les couleurs : "Couleur Unique" ne peut pas coexister avec d'autres couleurs.
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-bordered mb-0">
+                            <thead class="bg-secondary text-white">
+                                <tr>
+                                    <th class="py-3">Taille</th>
+                                    <th class="py-3">Couleur</th>
+                                    <th class="text-center py-3">Stock</th>
+                                    <th class="text-center py-3" style="width: 200px;">Opérations</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if declinaisons_article | length == 0 %}
+                                <tr>
+                                    <td colspan="4" class="text-center py-5 text-muted font-italic">Aucune variante
+                                        définie pour le moment.</td>
+                                </tr>
+                                {% else %}
+                                {% for decli in declinaisons_article %}
+                                <tr>
+                                    <td class="align-middle">
+                                        {% if decli.id_taille == 1 or decli.taille_id == 1 %}
+                                        <span class="badge px-3 py-2 font-weight-bold"
+                                            style="background-color: #f8d7da; color: #721c24; font-size: 0.95rem; border: 1px solid #f5c6cb;">
+                                            {% else %}
+                                            <span class="badge px-3 py-2 font-weight-bold"
+                                                style="background-color: #d1ecf1; color: #0c5460; font-size: 0.95rem; border: 1px solid #bee5eb;">
+                                                {% endif %}
+                                                {{ decli.libelle_taille | default(decli.libelle) | default('Taille ' ~
+                                                decli.taille_id) }}
+                                            </span>
+                                    </td>
+
+                                    <td class="align-middle">
+                                        {% if decli.id_couleur == 1 or decli.couleur_id == 1 %}
+                                        <span class="badge px-3 py-2 font-weight-bold"
+                                            style="background-color: #f8d7da; color: #721c24; font-size: 0.95rem; border: 1px solid #f5c6cb;">
+                                            {% else %}
+                                            <span class="badge px-3 py-2 font-weight-bold"
+                                                style="background-color: #d4edda; color: #155724; font-size: 0.95rem; border: 1px solid #c3e6cb;">
+                                                {% endif %}
+                                                {{ decli.libelle_couleur | default(decli.libelle) | default('Couleur ' ~
+                                                decli.couleur_id) }}
+                                            </span>
+                                    </td>
+
+                                    <td class="text-center align-middle">
+                                        {% if decli.stock > 0 %}
+                                        <span class="font-weight-bold" style="color: #28a745; font-size: 1.3rem;">{{
+                                            decli.stock }}</span>
+                                        {% else %}
+                                        <span class="badge px-3 py-2 font-weight-bold"
+                                            style="background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; font-size: 0.9rem;">Rupture</span>
+                                        {% endif %}
+                                    </td>
+
+                                    <td class="text-center align-middle">
+                                        <div class="d-flex justify-content-center">
+                                            <a href="/admin/declinaison_article/edit?id_declinaison_article={{ decli.id_declinaison_article | default(decli.id_declinaison_meuble) }}"
+                                                class="btn btn-outline-primary btn-sm mx-1 font-weight-bold shadow-sm"
+                                                title="Modifier le stock">
+                                                Éditer
+                                            </a>
+                                            <form action="/admin/declinaison_article/delete" method="POST"
+                                                class="m-0 mx-1"
+                                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette variante ?');">
+                                                <input type="hidden" name="id_declinaison_article"
+                                                    value="{{ decli.id_declinaison_article | default(decli.id_declinaison_meuble) }}">
+                                                <input type="hidden" name="id_article" value="{{ article.id_article }}">
+                                                <button type="submit"
+                                                    class="btn btn-outline-danger btn-sm font-weight-bold shadow-sm"
+                                                    title="Supprimer">
+                                                    Sup.
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var loadFile = function (event) {
+        var output = document.getElementById('img_output');
+        output.src = URL.createObjectURL(event.target.files[0]);
+    };
+</script>
+{% endblock %}

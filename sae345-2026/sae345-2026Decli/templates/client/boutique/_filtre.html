@@ -1,0 +1,57 @@
+<form method="post" action="/client/panier/filtre">
+
+    <div class="form-group mb-4">
+        <input name="filter_word" type="text" placeholder="Rechercher un meuble..."
+            class="form-control border-0 shadow-sm"
+            value="{% if session['filter_word'] %}{{ session['filter_word'] }}{% endif %}">
+    </div>
+
+    {% if items_filtre is defined %}
+    <div class="form-group mb-4">
+        <h5 class="text-uppercase text-secondary font-weight-bold mb-3 small">Catégories</h5>
+        <div class="pl-1">
+            {% for item_filtre in items_filtre %}
+            <div class="custom-control custom-checkbox mb-2">
+                {% set id_item = item_filtre.id_type_article | string %}
+                <input class="custom-control-input" type="checkbox" name="filter_types"
+                    value="{{ item_filtre.id_type_article }}" id="type-{{ id_item }}" {{ 'checked' if
+                    session.get('filter_types') and (id_item in session['filter_types']) else '' }}>
+                <label class="custom-control-label text-dark" for="type-{{ id_item }}" style="cursor: pointer;">
+                    {{ item_filtre.libelle }}
+                </label>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="form-group mb-4">
+        <h5 class="text-uppercase text-secondary font-weight-bold mb-3 small">Prix (€)</h5>
+        <div class="row align-items-center px-1">
+            <div class="col p-0">
+                <input name="filter_prix_min" type="number" step="1" placeholder="Min"
+                    class="form-control form-control-sm text-center border-0 shadow-sm"
+                    value="{% if session['filter_prix_min'] %}{{ session['filter_prix_min'] }}{% endif %}">
+            </div>
+            <div class="col-auto px-2 text-muted">-</div>
+            <div class="col p-0">
+                <input name="filter_prix_max" type="number" step="1" placeholder="Max"
+                    class="form-control form-control-sm text-center border-0 shadow-sm"
+                    value="{% if session['filter_prix_max'] %}{{ session['filter_prix_max'] }}{% endif %}">
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100 mb-2 font-weight-bold shadow-sm rounded-pill">
+        Appliquer les filtres
+    </button>
+</form>
+
+{% if session.get('filter_word') or session.get('filter_prix_max') or session.get('filter_prix_min') or
+session.get('filter_types') %}
+<form action="/client/panier/filtre/suppr" method="post">
+    <button type="submit" class="btn btn-outline-secondary w-100 shadow-sm mt-1 rounded-pill">
+        Effacer la sélection
+    </button>
+</form>
+{% endif %}

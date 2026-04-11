@@ -1,0 +1,93 @@
+{% extends "client/layout_client.html" %}
+{% block body %}
+<div class="container mt-5 mb-5">
+
+    <div class="mb-4">
+        <a href="/client/article/show" class="btn btn-outline-secondary font-weight-bold rounded-pill px-4">
+            Continuer mes achats
+        </a>
+    </div>
+
+    <h3 class="mb-4 font-weight-bold text-dark">Options disponibles pour : <span class="text-success">{{ article.nom
+            }}</span></h3>
+
+    <div class="row">
+        <div class="col-md-5 col-lg-4 mb-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 15px;">
+                <div class="card-body text-center p-4">
+                    <h4 class="card-title font-weight-bold" style="color: #0b2e13">{{ article.nom }}</h4>
+
+                    {% if article.image is not none %}
+                    <img class="img-fluid rounded mx-auto d-block mt-4 mb-3"
+                        style="max-height: 250px; object-fit: contain;"
+                        src="{{ url_for('static', filename='images/' ~ article.image) }}"
+                        alt="Image de {{ article.nom }}">
+                    {% else %}
+                    <img class="img-fluid rounded mx-auto d-block mt-4 mb-3"
+                        style="max-height: 250px; object-fit: contain;"
+                        src="{{ url_for('static', filename='images/no_photo.jpeg') }}"
+                        alt="Pas d'image pour {{ article.nom }}">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7 col-lg-8">
+            <div class="list-group shadow-sm" style="border-radius: 15px;">
+                {% for item_declinaison in declinaisons %}
+                <div class="list-group-item list-group-item-action flex-column align-items-start p-4 border-bottom">
+
+                    <div class="d-flex w-100 justify-content-between align-items-center mb-3">
+                        <div>
+                            <h4 class="mb-2 font-weight-bold text-dark">
+                                {% if item_declinaison.id_couleur is defined and item_declinaison.id_couleur > 1 %}
+                                Couleur : <span class="text-secondary">{{ item_declinaison.libelle_couleur }}</span>
+                                {% endif %}
+
+                                {% if item_declinaison.id_taille is defined and item_declinaison.id_taille > 1 %}
+                                <span class="ml-2">| Taille : <span class="text-secondary">{{
+                                        item_declinaison.libelle_taille }}</span></span>
+                                {% endif %}
+                            </h4>
+
+                            {% if item_declinaison.stock is defined and item_declinaison.stock != None %}
+                            {% if item_declinaison.stock > 0 %}
+                            <span class="badge bg-light text-success border px-2 py-1">En stock : {{
+                                item_declinaison.stock }}</span>
+                            {% else %}
+                            <span class="badge bg-danger text-white px-2 py-1">Rupture de stock</span>
+                            {% endif %}
+                            {% endif %}
+                        </div>
+
+                        <h3 class="mb-0 text-success font-weight-bold">{{ item_declinaison.prix }} €</h3>
+                    </div>
+
+                    {% if item_declinaison.stock is defined and item_declinaison.stock != None and
+                    item_declinaison.stock > 0 %}
+                    <form action="/client/panier/add" method="post" class="mt-2" style="max-width: 300px;">
+                        <input type="hidden" name="id_article" value="{{ item_declinaison.id_declinaison_article }}">
+
+                        <div class="input-group"
+                            style="border-radius: 50px; overflow: hidden; border: 1px solid #ced4da;">
+                            <div class="input-group-prepend">
+                                <button class="btn btn-success font-weight-bold px-4" type="submit"
+                                    id="button-addon-{{ item_declinaison.id_declinaison_article }}">
+                                    Ajouter
+                                </button>
+                            </div>
+                            <input type="number" id="input-{{ item_declinaison.id_declinaison_article }}" step="1"
+                                min="1" max="{{ item_declinaison.stock }}" class="form-control border-0 bg-white"
+                                value="1" name="quantite"
+                                aria-describedby="button-addon-{{ item_declinaison.id_declinaison_article }}">
+                        </div>
+                    </form>
+                    {% endif %}
+
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 mb-4">
+    <div class="container-fluid px-4">
+
+
+        <a class="navbar-brand font-weight-bold text-dark" href="/client">
+            SAE Boutique
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-3">
+
+                <li class="nav-item">
+                    <a class="nav-link font-weight-bold text-dark" href="/client/article/show">
+                        Produits & Panier
+                    </a>
+                </li>
+
+                <li class="nav-item dropdown ms-2">
+                    <a href="#" class="nav-link dropdown-toggle text-dark font-weight-bold" data-bs-toggle="dropdown">
+                        Mon Compte
+                    </a>
+                    <ul class="dropdown-menu shadow-sm border-0 mt-2">
+                        <li>
+                            <a class="dropdown-item py-2" href="/client/commande/show">
+                                Mes commandes
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="/client/envies/show">
+                                Ma liste d'envies
+                            </a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <a class="dropdown-item py-2" href="/client/coordonnee/show">
+                                Mes coordonnées
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center">
+                {% if session['role'] %}
+                <div class="text-dark me-3 font-weight-bold">
+                    Bonjour, <span class="text-success">{{ session['login'] }}</span>
+                    {% if session['role'] == 'ROLE_admin' %}
+                    <span class="badge bg-danger text-white ms-1 shadow-sm">Alerte : Droit Admin</span>
+                    {% endif %}
+                </div>
+                <a class="btn btn-outline-danger btn-sm font-weight-bold rounded-pill px-3" href="/logout">
+                    Se déconnecter
+                </a>
+                {% else %}
+                <a class="btn btn-success btn-sm font-weight-bold rounded-pill px-3 shadow-sm" href="/login">
+                    Espace Client
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for categorie, message in messages %}
+    <div class="alert {{ categorie }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center"
+        role="alert">
+        <div>
+            <strong>Information :</strong> {{ message }}
+        </div>
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>

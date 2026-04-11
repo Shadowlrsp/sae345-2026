@@ -1,0 +1,98 @@
+{% extends 'admin/layout_admin.html' %}
+
+{% block body %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center border-bottom pb-3 mb-4">
+        <h2>Ajouter un nouvel article</h2>
+        <a href="/admin/article/show" class="btn btn-outline-secondary">Annuler</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 text-center mb-4">
+            <div class="card shadow-sm p-3">
+                <img id="img_output" src="{{ url_for('static', filename='images/no_photo.jpeg') }}"
+                    class="img-fluid rounded border" style="max-height: 300px; object-fit: contain;" alt="Aperçu">
+                <p class="text-muted mt-2 small">Aperçu de l'image</p>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form action="/admin/article/add" method="post" enctype="multipart/form-data">
+
+                        <div class="row">
+                            <div class="col-md-8 form-group mb-3">
+                                <label for="nom" class="font-weight-bold">Nom du meuble :</label>
+                                <input name="nom" id="nom" type="text" class="form-control"
+                                    placeholder="Ex: Buffet Scandinave" required>
+                            </div>
+                            <div class="col-md-4 form-group mb-3">
+                                <label for="prix" class="font-weight-bold">Prix de base (€) :</label>
+                                <input name="prix" id="prix" type="number" min="0" step="0.01" class="form-control"
+                                    placeholder="0.00" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="type_article_id" class="font-weight-bold">Catégorie :</label>
+                            <select name="type_article_id" id="type_article_id" required
+                                class="form-control custom-select">
+                                <option value="" disabled selected>-- Choisir un type --</option>
+                                {% for type in types_article %}
+                                <option value="{{ type.id_type_article }}"> {{ type.libelle }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="description" class="font-weight-bold">Description / Fournisseur :</label>
+                            <textarea name="description" id="description" class="form-control" rows="3"
+                                placeholder="Détails techniques..."></textarea>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="stock" class="font-weight-bold">Stock initial :</label>
+                            <input name="stock" id="stock" type="number" min="1" value="1" class="form-control"
+                                required>
+                            <small class="form-text text-muted">Ce stock sera affecté à la déclinaison par défaut
+                                (Taille/Couleur unique).</small>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="image" class="font-weight-bold">Photo de l'article :</label>
+                            <div class="custom-file">
+                                <input name="image" type="file" class="custom-file-input" id="image"
+                                    onchange="loadFile(event)">
+                                <label class="custom-file-label" for="image">Choisir un fichier...</label>
+                            </div>
+                        </div>
+
+                        <hr>
+                        <div class="alert alert-info small">
+                            Une fois l'article créé, vous pourrez définir ses
+                            <strong>stocks par déclinaison</strong> (taille, couleur) depuis la liste des articles.
+                        </div>
+
+                        <button type="submit" class="btn btn-success btn-lg btn-block shadow-sm">
+                            Enregistrer l'article
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var loadFile = function (event) {
+        var output = document.getElementById('img_output');
+        output.src = URL.createObjectURL(event.target.files[0]);
+        output.onload = function () {
+            URL.revokeObjectURL(output.src)
+        }
+        var fileName = event.target.files[0].name;
+        var nextSibling = event.target.nextElementSibling;
+        nextSibling.innerText = fileName;
+    };
+</script>
+{% endblock %}

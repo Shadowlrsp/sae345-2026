@@ -1,0 +1,116 @@
+{% extends 'admin/layout_admin.html' %}
+
+{% block title %}
+<title>Modifier une déclinaison</title>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <h2 class="text-dark">
+            Modifier la variante de :
+            <span class="text-success">{{ declinaison_article.nom | default('l\'article') }}</span>
+        </h2>
+        <a href="/admin/article/edit?id_article={{ declinaison_article.article_id }}"
+            class="btn btn-outline-secondary shadow-sm">
+            Retour
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3 text-center border-0">
+                <h6 class="text-muted mb-3">Aperçu de l'article</h6>
+                {% if declinaison_article.image_article is defined and declinaison_article.image_article is not none %}
+                <img class="img-fluid rounded border shadow-sm"
+                    style="max-height: 280px; object-fit: contain; width: 100%;"
+                    src="{{ url_for('static', filename='images/' ~ declinaison_article.image_article) }}"
+                    alt="Image de {{ declinaison_article.nom }}">
+                {% else %}
+                <img class="img-fluid rounded border shadow-sm"
+                    style="max-height: 280px; object-fit: contain; width: 100%;"
+                    src="{{ url_for('static', filename='images/no_photo.jpeg') }}" alt="Pas de photo">
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <form method="post" action="/admin/declinaison_article/edit">
+
+                        <input type="hidden" value="{{ declinaison_article.id_declinaison_meuble }}"
+                            name="id_declinaison_article">
+                        <input type="hidden"
+                            value="{{ declinaison_article.article_id | default(declinaison_article.meuble_id) }}"
+                            name="id_article">
+
+                        <div class="form-group mb-4">
+                            <label for="stock" class="font-weight-bold text-dark">Quantité en stock :</label>
+                            <input name="stock" id="stock" type="number" min="0" step="1"
+                                value="{{ declinaison_article.stock }}"
+                                class="form-control form-control-lg border-warning text-center font-weight-bold"
+                                style="max-width: 200px;" required>
+                        </div>
+
+                        <hr>
+
+                        <div class="form-group mb-4">
+                            <label for="id_taille" class="font-weight-bold">Taille :</label>
+
+                            {% if d_taille_uniq is defined and d_taille_uniq == 1 %}
+                            <div class="alert alert-warning py-2 mb-0 shadow-sm border-warning">
+                                <strong>Taille unique active.</strong><br>
+                                <small>Supprimez d'abord cette déclinaison pour créer des tailles spécifiques.</small>
+                            </div>
+                            <input type="hidden" name="id_taille" value="1">
+                            {% else %}
+                            <select name="id_taille" id="id_taille" class="form-control custom-select">
+                                {% for taille in tailles %}
+                                <option value="{{ taille.id_taille }}" {% if
+                                    taille.id_taille==declinaison_article.taille_id %} selected {% endif %}>
+                                    {{ taille.libelle_taille | default(taille.libelle) }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label for="id_couleur" class="font-weight-bold">Couleur :</label>
+
+                            {% if d_couleur_uniq is defined and d_couleur_uniq == 1 %}
+                            <div class="alert alert-warning py-2 mb-0 shadow-sm border-warning">
+                                <strong>Couleur unique active.</strong><br>
+                                <small>Supprimez d'abord cette déclinaison pour créer des couleurs spécifiques.</small>
+                            </div>
+                            <input type="hidden" name="id_couleur" value="1">
+                            {% else %}
+                            <select name="id_couleur" id="id_couleur" class="form-control custom-select">
+                                {% for couleur in couleurs %}
+                                <option value="{{ couleur.id_couleur }}" {% if
+                                    couleur.id_couleur==declinaison_article.couleur_id %} selected {% endif %}>
+                                    {{ couleur.libelle_couleur | default(couleur.libelle) }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between mt-5">
+                            <button type="submit" class="btn btn-warning px-5 font-weight-bold shadow-sm">
+                                Mettre à jour
+                            </button>
+                            <a href="/admin/article/edit?id_article={{ declinaison_article.article_id }}"
+                                class="btn btn-light border px-4 shadow-sm">
+                                Annuler
+                            </a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+    <div class="container-fluid px-4">
+        <a class="navbar-brand font-weight-bold" href="/admin">
+            SAE BDD 2026
+            <span class="text-white-50 ms-2 border-start ps-2 border-light" style="font-size: 0.9rem;">Espace
+                Admin</span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">
+                        Commandes
+                    </a>
+                    <ul class="dropdown-menu shadow border-0 mt-2">
+                        <li><a class="dropdown-item" href="/admin/commande/show">Gestions des commandes</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a href="#" class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown">
+                        Catalogue
+                    </a>
+                    <ul class="dropdown-menu shadow border-0 mt-2">
+                        <li><a class="dropdown-item" href="/admin/article/show">Gestion des articles</a></li>
+                        <li><a class="dropdown-item" href="/admin/type-article/show">Gestion des catégories</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li>
+                            <h6 class="dropdown-header text-primary font-weight-bold">Data Visualisation</h6>
+                        </li>
+                        <li><a class="dropdown-item" href="/admin/dataviz/etat1"> Répartition articles</a></li>
+                        <li><a class="dropdown-item" href="/admin/dataviz/etat2">Carte des ventes</a></li>
+                        <li><a class="dropdown-item" href="/admin/dataviz/commentaires">Notes & Avis</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <div class="d-flex align-items-center">
+                {% if session['role'] %}
+                <div class="text-light me-3">
+                    <span class="ms-1 font-weight-bold text-white">{{ session['login'] }}</span>
+                    {% if session['role'] == 'ROLE_admin' %}
+                    <span class="badge bg-light text-primary ms-1 shadow-sm">Admin</span>
+                    {% elif session['role'] == 'ROLE_client' %}
+                    <span class="badge bg-danger text-white ms-1 shadow-sm">Anomalie (Droit Client)</span>
+                    {% endif %}
+                </div>
+                <a class="btn btn-outline-light btn-sm font-weight-bold" href="/logout">
+                    Déconnexion
+                </a>
+                {% else %}
+                <a class="btn btn-light text-primary btn-sm font-weight-bold shadow-sm" href="/login">
+                    Espace Admin
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container-fluid px-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for categorie, message in messages %}
+    <div class="alert {{ categorie }} alert-dismissible fade show shadow-sm border-0 d-flex align-items-center"
+        role="alert">
+
+        <div>
+            <strong>Information :</strong> {{ message }}
+        </div>
+
+        <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>

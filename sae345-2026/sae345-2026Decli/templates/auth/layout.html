@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>SAE BDD - Accueil</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+    {% block stylesheets %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/bootstrap.css') }}">
+    {% endblock %}
+
+    <style>
+        body {
+            background-color: #f4f6f9;
+        }
+    </style>
+</head>
+
+<body>
+
+    {% include('auth/_nav.html') %}
+
+    <div class="container mt-5 mb-5">
+        {% block body %}
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <div class="card shadow-lg border-0" style="border-radius: 20px; overflow: hidden;">
+                    <div class="bg-primary text-white py-5">
+                        <h1 class="font-weight-bold">Site de Vente E-Commerce de Meuble</h1>
+                    </div>
+                    <div class="card-body p-5">
+                        <h2 class="text-secondary mb-4">Participant au développement :</h2>
+                        <div class="row text-dark font-weight-bold mb-4" style="font-size: 1.1rem;">
+                            <div class="col-6 mb-2">LECOQ Brian</div>
+                            <div class="col-6 mb-2">GOSSIAUX Mathis</div>
+                            <div class="col-6 mb-2">KRAKOVINSKY Leo</div>
+                            <div class="col-6 mb-2">LECROSNIER Landry</div>
+                        </div>
+                        <hr class="w-50 mx-auto mb-4">
+                        <a href="/base/init"
+                            class="btn btn-outline-danger rounded-pill px-4 font-weight-bold shadow-sm">
+                            Réinitialiser la Base de donnée (Init)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+
+    {% block javascripts %}
+    <script src="{{ url_for('static', filename='assets/js/bootstrap.bundle.js') }}"></script>
+    {% endblock %}
+
+</body>
+
+</html>

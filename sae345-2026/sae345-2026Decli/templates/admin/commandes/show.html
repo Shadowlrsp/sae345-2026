@@ -1,0 +1,166 @@
+{% extends "admin/layout_admin.html" %}
+{% block body %}
+<div class="container-fluid px-4 mt-4">
+
+    <h2 class="mb-4 text-dark font-weight-bold">Gestion des Commandes</h2>
+
+    {% if articles_commande %}
+    <div class="card shadow-sm border-0 mb-5">
+        <div class="card-header bg-dark text-white py-3 d-flex justify-content-between align-items-center">
+            <h3 class="m-0 font-weight-bold">
+                Détail de la commande #{{ articles_commande[0].id_commande }}
+            </h3>
+            {% if articles_commande[0].etat_id == 1 or articles_commande[0].etat_id == 2 %}
+            <form action="/admin/commande/valider" method="post" class="m-0">
+                <input type="hidden" name="id_commande" value="{{ articles_commande[0].id_commande }}">
+                <button class="btn btn-success btn-sm font-weight-bold shadow-sm">
+                    Expédier la commande
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-8">
+                    <h4 class="text-muted text-uppercase font-weight-bold mb-3">Articles commandés</h4>
+                    <div class="table-responsive">
+                        <table class="table table-hover border-bottom">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Produit</th>
+                                    <th class="text-center">Quantité</th>
+                                    <th class="text-right">Prix Unitaire</th>
+                                    <th class="text-right">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set totaux = namespace(prix=0, quantite=0) %}
+                                {% for ligne in articles_commande %}
+                                {% set totaux.prix = totaux.prix + ligne.prix_ligne %}
+                                {% set totaux.quantite = totaux.quantite + ligne.quantite %}
+                                <tr>
+                                    <td class="align-middle">
+                                        <span class="font-weight-bold" style="font-size: 1.1rem;">{{ ligne.nom }}</span>
+
+                                        {% if ligne.couleur_id != 1 or ligne.taille_id != 1 %}
+                                        <div class="mt-1 small text-muted">
+                                            {% if ligne.couleur_id != 1 %}
+                                            <span class="mr-2">{{ ligne.libelle_couleur }}</span>
+                                            {% endif %}
+                                            {% if ligne.taille_id != 1 %}
+                                            <span>{{ ligne.libelle_taille }}</span>
+                                            {% endif %}
+                                        </div>
+                                        {% else %}
+                                        <div class="mt-1 small text-muted">Modèle standard</div>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle text-center font-weight-bold">{{ ligne.quantite }}</td>
+                                    <td class="align-middle text-right text-muted">{{ ligne.prix }} €</td>
+                                    <td class="align-middle text-right font-weight-bold text-primary">{{
+                                        ligne.prix_ligne }} €</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <h4 class="text-muted text-uppercase font-weight-bold mb-3">Récapitulatif</h4>
+                    <div class="bg-light p-4 rounded shadow-sm">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Nombre d'articles :</span>
+                            <span class="font-weight-bold">{{ totaux.quantite }}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="font-weight-bold text-dark text-uppercase">Total à payer :</span>
+                            <span class="font-weight-bold text-success" style="font-size: 1.5rem;">{{ totaux.prix }}
+                                €</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-3 bg-light rounded border">
+                        <h4 class="font-weight-bold text-brown">Informations de
+                            livraison
+                        </h4>
+                        <p class="mb-1"><strong>Adresse de livraison :</strong></p>
+                        <p class="mb-0"><strong>Adresse de facturation :</strong>
+
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary py-3">
+            <h5 class="text-white m-0 font-weight-bold">Historique des commandes</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped my-0">
+                    <thead class="bg-light text-secondary">
+                        <tr>
+                            <th class="pl-4 py-3">Client</th>
+                            <th class="py-3">Date</th>
+                            <th class="text-center py-3">Articles</th>
+                            <th class="text-right py-3">Total</th>
+                            <th class="text-center py-3">État</th>
+                            <th class="text-center py-3">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for commande in commandes %}
+                        <tr {% if commande.etat_id==1 %} style="background-color: #fff9e6;" {% endif %}>
+                            <td class="align-middle pl-4 font-weight-bold text-dark">{{ commande.login }}</td>
+                            <td class="align-middle text-muted">{{ commande.date_achat.strftime('%d/%m/%Y') }}</td>
+                            <td class="align-middle text-center">{{ commande.nbr_articles }}</td>
+                            <td class="align-middle text-right font-weight-bold">{{ commande.prix_total }} €</td>
+                            <td class="align-middle text-center">
+                                {% if commande.etat_id == 1 %}
+                                <span class="badge bg-warning text-dark px-3 py-2 rounded-pill shadow-sm">{{
+                                    commande.libelle }}</span>
+                                {% elif commande.etat_id == 3 or commande.etat_id == 4 %}
+                                <span class="badge bg-success text-white px-3 py-2 rounded-pill shadow-sm">{{
+                                    commande.libelle }}</span>
+                                {% elif commande.etat_id == 5 %}
+                                <span class="badge bg-danger text-white px-3 py-2 rounded-pill shadow-sm">{{
+                                    commande.libelle }}</span>
+                                {% else %}
+                                <span class="badge bg-secondary text-white px-3 py-2 rounded-pill shadow-sm">{{
+                                    commande.libelle }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle text-center py-3">
+                                <div class="d-flex justify-content-center">
+                                    <a href="/admin/commande/show?id_commande={{ commande.id_commande }}"
+                                        class="btn btn-outline-primary btn-sm font-weight-bold mx-1 shadow-sm">
+                                        Détails
+                                    </a>
+                                    {% if commande.etat_id == 1 or commande.etat_id == 2 %}
+                                    <form action="/admin/commande/valider" method="post" class="m-0 mx-1">
+                                        <input type="hidden" name="id_commande" value="{{ commande.id_commande }}">
+                                        <button class="btn btn-success btn-sm font-weight-bold shadow-sm">
+                                            Expédier
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <div style="width: 102px;" class="mx-1"></div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<br><br>
+{% endblock %}

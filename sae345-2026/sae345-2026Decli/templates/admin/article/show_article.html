@@ -1,0 +1,133 @@
+{% extends 'admin/layout_admin.html' %}
+
+{% block title %}
+<title>Afficher les articles - Administration</title>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="h3 mb-0 text-dark">Gestion des Articles</h2>
+        <a class="btn btn-outline-success font-weight-bold shadow-sm" href="/admin/article/add">
+            Ajouter un article
+        </a>
+    </div>
+
+    <table class="table table-hover shadow-sm bg-white border rounded">
+        <thead class="thead-dark">
+            <tr>
+                <th class="text-center">Image</th>
+                <th>Nom</th>
+                <th class="text-center">ID</th>
+                <th class="text-center">Type Article (ID)</th>
+                <th class="text-right">Prix</th>
+                <th class="text-center" style="color: #28a745;">Stock</th>
+                <th class="text-center">Nouveaux avis</th>
+                <th class="text-center">Nb déclinaisons</th>
+                <th class="text-center" style="width: 250px;">Opérations</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if articles | length >= 1 %}
+            {% for ligne in articles %}
+
+            <tr>
+                <td class="align-middle text-center">
+                    {% if ligne.image is not none %}
+                    <img class="img-thumbnail" style="width:50px; height:50px; object-fit: contain;"
+                        src="{{ url_for('static', filename='images/' + ligne.image) }}" alt="">
+                    {% else %}
+                    <img class="img-thumbnail" style="width:50px; height:50px; object-fit: contain;"
+                        src="{{ url_for('static', filename='images/no_photo.jpeg') }}" alt="">
+                    {% endif %}
+                </td>
+                <td class="align-middle font-weight-bold">{{ ligne.nom }}</td>
+                <td class="align-middle text-center text-muted">{{ ligne.id_article }}</td>
+                <td class="align-middle">
+                    <span style="color: #dc3545; font-weight: bold;">{{ ligne.libelle }}</span>
+                    <span class="text-muted small ml-1">({{ ligne.type_article_id }})</span>
+                </td>
+                <td class="align-middle text-right font-weight-bold pr-3" style="white-space: nowrap;">
+                    {{ "{:,.2f}".format(ligne.prix) }}&nbsp;€
+                </td>
+
+                <td class="text-center align-middle">
+                    {% if ligne.stock_total is defined and ligne.stock_total is not none %}
+
+                    {% if ligne.stock_total > 0 %}
+                    <div style="font-size: 1.25rem; font-weight: 800; color: #28a745;">
+                        {{ ligne.stock_total }}
+                    </div>
+
+                    {% if ligne.stock_min is defined and ligne.stock_min <= 0 %} <div class="mt-1">
+                        <span class="badge" style="background-color: #fd7e14; color: white; font-size: 0.75rem;">
+                            Rupture partielle
+                        </span>
+</div>
+{% endif %}
+
+{% else %}
+<span class="badge" style="background-color: #dc3545; color: white; padding: 8px 12px; font-weight: bold;">
+    RUPTURE TOTALE
+</span>
+{% endif %}
+
+{% else %}
+<span class="text-muted">ND</span>
+{% endif %}
+</td>
+
+<td class="align-middle text-center">
+    {% if ligne.nb_commentaires_nouveaux is defined and ligne.nb_commentaires_nouveaux > 0 %}
+    <a href="/admin/article/commentaires?id_article={{ ligne.id_article }}" class="btn btn-outline-danger btn-sm rounded-pill px-3 shadow-sm font-weight-bold">
+        {{ ligne.nb_commentaires_nouveaux }} <span class="small">nouveau(x)</span>
+    </a>
+    {% else %}
+    <span class="text-muted small">-</span>
+    {% endif %}
+</td>
+
+<td class="text-center align-middle">
+    <a href="/admin/article/edit?id_article={{ ligne.id_article }}" class="btn btn-sm btn-outline-warning rounded-pill">
+        {{ ligne.nb_declinaisons|default(0) }} variantes
+    </a>
+</td>
+
+
+
+<td class="align-middle">
+    <div class="row g-1 mb-1 px-2">
+        <div class="col-6 p-1">
+            {% if ligne.nb_declinaisons is defined and ligne.nb_declinaisons > 0 %}
+                <button class="btn btn-outline-secondary btn-sm w-100 shadow-sm" disabled title="Supprimez les variantes pour débloquer">
+                    Supprimer
+                </button>
+            {% else %}
+                <a class="btn btn-outline-danger btn-sm w-100 shadow-sm"
+                    href="/admin/article/delete?id_article={{ ligne.id_article }}"
+                    onclick="return confirm('Confirmer la suppression de cet article ?')">
+                    Supprimer
+                </a>
+            {% endif %}
+        </div>
+        <div class="col-6 p-1">
+            <a class="btn btn-outline-warning btn-sm w-100 shadow-sm"
+                href="/admin/article/edit?id_article={{ ligne.id_article }}">Éditer</a>
+        </div>
+    </div>
+    <div class="px-2">
+        <a class="btn btn-outline-primary btn-sm w-100 shadow-sm"
+            href="/admin/article/commentaires?id_article={{ ligne.id_article }}">Commentaires</a>
+    </div>
+</td>
+</tr>
+{% endfor %}
+{% else %}
+<tr>
+    <td colspan="9" class="text-center py-5">Pas d'article disponible.</td>
+</tr>
+{% endif %}
+</tbody>
+</table>
+</div>
+{% endblock %}

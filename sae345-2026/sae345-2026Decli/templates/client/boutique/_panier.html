@@ -1,0 +1,149 @@
+{% if articles_panier | length >= 1 %}
+<div class="card border-0 shadow-lg mb-4" style="border-radius: 20px; overflow: hidden;">
+
+    <div class="card-header bg-white border-bottom-0 pt-4 pb-0 px-4">
+        <h4 class="card-title text-success font-weight-bold mb-0">Mon Panier</h4>
+    </div>
+
+    <div class="card-body p-4">
+        <div class="table-responsive mb-4">
+            <table class="table table-borderless table-hover mb-0" style="vertical-align: middle;">
+                <thead class="text-uppercase text-muted small font-weight-bold border-bottom">
+                    <tr>
+                        <th scope="col" class="pb-3">Article</th>
+                        <th scope="col" class="text-center pb-3">Quantité</th>
+                        <th scope="col" class="text-right pb-3">Prix unitaire</th>
+                        <th scope="col" class="text-right pb-3">Sous-total</th>
+                        <th scope="col" class="text-center pb-3"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item_panier in articles_panier %}
+                    <tr class="border-bottom">
+                        <td class="align-middle py-3">
+                            <h5 class="text-dark font-weight-bold mb-1">{{ item_panier.nom }}</h5>
+
+                            {% if item_panier.id_couleur is defined and item_panier.id_couleur is not none and
+                            item_panier.id_couleur != 1 %}
+                            <span class="badge badge-pill text-secondary border font-weight-normal mr-1">
+                                {{ item_panier.libelle_couleur }}
+                            </span>
+                            {% endif %}
+
+                            {% if item_panier.id_taille is defined and item_panier.id_taille is not none and
+                            item_panier.id_taille != 1 %}
+                            <span class="badge badge-pill text-secondary border font-weight-normal">
+                                {{ item_panier.libelle_taille }}
+                            </span>
+                            {% endif %}
+                        </td>
+
+                        <td class="align-middle py-3">
+                            <div class="d-flex justify-content-center">
+                                <div class="d-flex align-items-center bg-light border"
+                                    style="border-radius: 50px; padding: 2px 5px;">
+
+                                    <form action="/client/panier/delete" method="post" class="m-0">
+                                        <input type="hidden" name="id_article" value="{{ item_panier.id_article }}">
+                                        <button type="submit"
+                                            class="btn btn-sm btn-light text-danger rounded-circle font-weight-bold"
+                                            style="width: 30px; height: 30px; line-height: 1;" title="Enlever 1">
+                                            &minus;
+                                        </button>
+                                    </form>
+
+                                    <span class="mx-3 font-weight-bold text-dark">{{ item_panier.quantite }}</span>
+
+                                    {% if item_panier.stock is defined and item_panier.stock > 0 %}
+                                    <form action="/client/panier/add" method="post" class="m-0">
+                                        <input type="hidden" name="quantite" value="1">
+                                        <input type="hidden" name="id_article" value="{{ item_panier.id_article }}">
+                                        <button type="submit"
+                                            class="btn btn-sm btn-light text-success rounded-circle font-weight-bold"
+                                            style="width: 30px; height: 30px; line-height: 1;" title="Ajouter 1">
+                                            &plus;
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <div style="width: 30px; height: 30px;"></div>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </td>
+
+                        <td class="text-right align-middle text-muted py-3">
+                            {{ "{:,.2f} €".format(item_panier.prix) }}
+                        </td>
+
+                        <td class="text-right align-middle py-3">
+                            <span class="font-weight-bold text-success" style="font-size: 1.1rem;">
+                                {{ "{:,.2f} €".format((item_panier.prix * item_panier.quantite)) }}
+                            </span>
+                        </td>
+
+                        <td class="text-center align-middle py-3">
+                            <form action="/client/panier/delete/line" method="post" class="m-0">
+                                <input type="hidden" name="id_article" value="{{ item_panier.id_article }}">
+                                <button type="submit"
+                                    class="btn btn-light text-danger border border-danger rounded-circle d-flex align-items-center justify-content-center shadow-sm"
+                                    title="Supprimer cet article"
+                                    style="width: 32px; height: 32px; font-size: 1.2rem; padding: 0; transition: 0.2s;">
+                                    &times;
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="p-3 bg-light rounded" style="border: 1px dashed #ced4da;">
+            {% if validation is defined and validation == 1 %}
+            <div class="text-left">
+                <a href="/client/article/show" class="btn btn-outline-secondary font-weight-bold rounded-pill px-4">
+                    Continuer mes achats
+                </a>
+            </div>
+            {% else %}
+            <div class="row align-items-center">
+
+                <div class="col-12 col-md-4 text-center text-md-left mb-4 mb-md-0">
+                    <form action="/client/panier/vider" method="post" class="m-0">
+                        <button type="submit"
+                            class="btn btn-outline-danger btn-sm font-weight-bold rounded-pill px-3 shadow-sm">
+                            Vider le panier
+                        </button>
+                    </form>
+                </div>
+
+                <div class="col-12 col-md-8">
+                    <div class="row align-items-center justify-content-center justify-content-md-end m-0">
+
+                        {% if prix_total %}
+                        <div class="col-auto text-right px-4 mb-3 mb-sm-0">
+                            <span class="text-muted small text-uppercase font-weight-bold d-block">Total à payer</span>
+                            <strong class="text-success" style="font-size: 1.6rem; white-space: nowrap;">
+                                {{ "{:,.2f} €".format(prix_total) }}
+                            </strong>
+                        </div>
+                        {% endif %}
+
+                        <div class="col-auto px-0">
+                            <form action="/client/commande/valide" method="post" class="m-0">
+                                <button type="submit"
+                                    class="btn btn-success btn-lg shadow font-weight-bold rounded-pill px-4 px-lg-5">
+                                    Valider
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}

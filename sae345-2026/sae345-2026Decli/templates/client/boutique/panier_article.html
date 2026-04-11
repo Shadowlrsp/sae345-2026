@@ -1,0 +1,133 @@
+{% extends "client/layout_client.html" %}
+{% block body %}
+<div class="container my-5">
+
+    <div class="row mb-5">
+        <div class="col-lg-8 mb-4 mb-lg-0">
+            {% include('client/boutique/_panier.html') %}
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 bg-light h-100" style="border-radius: 15px;">
+                <div class="card-body p-4">
+                    <h4 class="card-title text-success mb-3">Filtres</h4>
+                    <p class="text-muted small border-bottom pb-2">Recherche par nom ou catégories :</p>
+                    {% include('client/boutique/_filtre.html') %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h2 class="h3 mb-0 text-dark font-weight-bold">Nos Articles</h2>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 ">
+        {% for article in articles %}
+        <div class="col mb-4 ">
+            <div class="card h-100 shadow-sm border-0" style="border-radius: 12px; overflow: hidden; transition: 0.3s;">
+
+                <div class="position-relative bg-white pt-3">
+                    <div class="position-absolute top-0 end-0 p-2" style="z-index: 10;">
+                        {% if article.liste_envie == 1 %}
+                        <a href="/client/envie/add?id_article={{ article.id_article }}"
+                            class="btn btn-light btn-sm rounded-circle shadow-sm" title="Retirer des favoris">💛</a>
+                        {% else %}
+                        <a href="/client/envie/add?id_article={{ article.id_article }}"
+                            class="btn btn-light btn-sm rounded-circle shadow-sm" title="Ajouter aux favoris">🤍</a>
+                        {% endif %}
+                    </div>
+
+                    <a href="/client/article/details?id_article={{ article.id_article }}"
+                        class="d-block text-center p-3">
+                        {% if article.image is not none %}
+                        <img src="{{ url_for('static', filename='images/' ~ article.image) }}" class="img-fluid"
+                            alt="image de {{ article.nom }}" style="height: 200px; object-fit: contain;">
+                        {% else %}
+                        <img src="{{ url_for('static', filename='images/no_photo.jpeg') }}" class="img-fluid"
+                            alt="image manquante" style="height: 200px; object-fit: contain;">
+                        {% endif %}
+                    </a>
+                </div>
+
+                <div class="card-body d-flex flex-column bg-light">
+                    <a href="/client/article/details?id_article={{ article.id_article }}"
+                        class="text-decoration-none text-dark mb-3">
+                        <h3 class="card-title font-weight-bold" style="color: #0b2e13">{{ article.nom }}</h3>
+                        <h4 class="text-success font-weight-bold">{{ article.prix }} €</h4>
+                    </a>
+
+                    <div class="mt-auto">
+                        {% if article.stock is defined and article.stock != None %}
+                        {% if article.stock > 0 %}
+                        {% if article.nb_declinaison > 1 %}
+                        <a href="/client/panier/declinaison?id_article={{ article.id_article }}"
+                            class="btn btn-warning w-100 text-dark font-weight-bold shadow-sm rounded-pill">
+                            Voir les options ({{ article.nb_declinaison }})
+                        </a>
+                        {% else %}
+                        <form action="/client/panier/add" method="post">
+                            <input type="hidden" name="id_article" value="{{ article.id_declinaison_unique }}">
+                            <div class="input-group shadow-sm" style="border-radius: 50px; overflow: hidden;">
+                                <input type="number" id="input-{{ article.id_article }}" step="1" min="1"
+                                    max="{{ article.stock }}" class="form-control border-0 pl-3" value="1"
+                                    name="quantite" aria-label="Quantité" style="background-color: #fff;">
+                                <div class="input-group-append">
+                                    <button class="btn btn-success font-weight-bold px-3 border-0" type="submit">
+                                        Ajouter
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                        {% endif %}
+                        {% else %}
+                        <div class="alert alert-danger text-center mb-0 py-2 font-weight-bold rounded-pill"
+                            role="alert">
+                            Indisponible
+                        </div>
+                        {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="card-footer bg-white border-top-0 pt-2 pb-3">
+                    <div class="d-flex justify-content-between align-items-center small font-weight-bold">
+                        <span class="text-secondary">
+                            {% if article.stock is defined and article.stock != None and article.stock > 0 %}
+                            Stock : {{ article.stock }}
+                            {% endif %}
+                        </span>
+
+                        <div class="d-flex align-items-center mt-2">
+
+                            {% if article.nb_notes is defined and article.nb_notes > 0 %}
+
+                            <a href="/client/article/details?id_article={{ article.id_article }}"
+                                class="text-decoration-none badge bg-white border shadow-sm px-2 py-1 d-flex align-items-center"
+                                style="font-size: 0.9rem; transition: 0.2s;" title="Voir les notes">
+                                <span class="text-warning mr-1"
+                                    style="font-size: 1rem; line-height: 1; text-shadow: 1px 1px 1px rgba(0,0,0,0.1);">&#9733;</span>
+                                <span class="text-dark font-weight-bold">{{ "{:,.1f}".format(article.moy_notes)
+                                    }}</span>
+                            </a>
+                            {% endif %}
+
+                            {% if article.nb_avis is defined and article.nb_avis > 0 %}
+                            <a href="/client/article/details?id_article={{ article.id_article }}"
+                                class="text-decoration-none text-muted ml-2 font-weight-bold"
+                                style="font-size: 0.85rem; transition: color 0.2s ease;"
+                                onmouseover="this.style.color='#198754';" onmouseout="this.style.color='';"
+                                title="Lire les avis">
+                                ({{ article.nb_avis }} avis)
+                            </a>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

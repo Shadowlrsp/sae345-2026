@@ -1,0 +1,123 @@
+{% extends "client/layout_client.html" %}
+{% block body %}
+<div class="container-fluid my-4">
+    {% if articles_commande %}
+    <div class="card shadow-sm border-info mb-4">
+        <div class="card-header bg-info text-white">
+            <h3 class="h5 mb-0">Récapitulatif de la commande sélectionnée</h3>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Nom de l'article</th>
+                        <th class="text-center">Quantité</th>
+                        <th class="text-right">Prix Unitaire</th>
+                        <th class="text-right">Sous-total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for ligne in articles_commande %}
+                    <tr>
+                        <td>
+                            <strong class="text-dark">{{ ligne.nom }}</strong>
+                            <div class="mt-1">
+                                {% if ligne.id_couleur is defined and ligne.id_couleur is not none and ligne.id_couleur
+                                != 1 %}
+                                <span class="badge badge-pill border text-muted"
+                                    style="border-color: #6dcea2 !important;">
+                                    {{ ligne.libelle_couleur }}
+                                </span>
+                                {% endif %}
+
+                                {% if ligne.id_taille is defined and ligne.id_taille is not none and ligne.id_taille !=
+                                1 %}
+                                <span class="badge badge-pill border text-muted"
+                                    style="border-color: #d941c2 !important;">
+                                    {{ ligne.libelle_taille
+                                    }}
+                                </span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="text-center align-middle">x {{ ligne.quantite }}</td>
+                        <td class="text-right align-middle">{{ "{:,.2f}".format(ligne.prix) }} €</td>
+                        <td class="text-right align-middle font-weight-bold">{{ "{:,.2f}".format(ligne.prix_ligne) }} €
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="mt-4 p-3 bg-light rounded border text-right">
+                <h4 class="font-weight-bold">
+                    Total de la commande :
+                    <span class="text-success">
+                        {{ "{:,.2f} €".format(articles_commande | sum(attribute='prix_ligne')) }}
+                    </span>
+                </h4>
+            </div>
+
+            <div class="mt-4 p-3 bg-light rounded border">
+                <h5 class="font-weight-bold text-brown">Informations de livraison
+                </h5>
+                <p class="mb-1"><strong>Adresse de ivraison :</strong></p>
+                <p class="mb-0"><strong>Adresse de Facturation :</strong>
+
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white py-3">
+            <h5 class="text-primary m-0 font-weight-bold">Historique de mes commandes
+            </h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="thead-light text-center">
+                        <tr>
+                            <th>Date d'achat</th>
+                            <th>Articles</th>
+                            <th>Montant Total</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        {% for commande in commandes %}
+                        <tr {% if commande.etat_id==1 %} class="table-warning font-weight-bold" {% endif %}>
+                            <td class="align-middle">{{ commande.date_achat.strftime('%d/%m/%Y à %H:%M') }}</td>
+                            <td class="align-middle">{{ commande.nbr_articles }}</td>
+                            <td class="align-middle text-primary font-weight-bold">{{ "{:,.2f}
+                                €".format(commande.prix_total) }}</td>
+                            <td class="align-middle">
+                                {% if commande.etat_id == 1 %}
+                                <span class="badge w-100 py-2"
+                                    style="background-color: #ffc107; color: #000; font-weight: bold;">
+                                    {{ commande.libelle }}
+                                </span>
+                                {% else %}
+                                <span class="badge w-100 py-2 text-white"
+                                    style="background-color: #28a745; font-weight: bold;">
+                                    {{ commande.libelle }}
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td class="align-middle">
+                                <a href="/client/commande/show?id_commande={{ commande.id_commande }}"
+                                    class="btn btn-sm btn-primary px-3 shadow-sm">
+                                    Détails
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

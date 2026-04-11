@@ -1,0 +1,205 @@
+{% extends 'admin/layout_admin.html' %}
+
+{% block title %}
+    <title>Dashboard - Statistiques Catalogue</title>
+{% endblock %}
+
+{% block javascripts_head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid px-4 mt-4 mb-5">
+    <h2 class="mb-4 text-dark font-weight-bold">Tableau de bord du Catalogue</h2>
+
+    <div class="row mb-5">
+        <div class="col-lg-4 d-flex flex-column justify-content-between">
+            
+            {% set total_meubles = namespace(value=0) %}
+            {% set total_decli = namespace(value=0) %}
+            {% for ligne in types_articles_nb %}
+                {% set total_meubles.value = total_meubles.value + ligne.nbr_meubles %}
+                {% set total_decli.value = total_decli.value + ligne.nbr_declinaisons %}
+            {% endfor %}
+
+            <div class="card shadow-sm border-0 border-left-primary mb-4 flex-grow-1" style="border-left: 5px solid #4e73df;">
+                <div class="card-body d-flex align-items-center">
+                    <div class="row no-gutters align-items-center w-100">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1" style="letter-spacing: 1px;">Nombre de modèles de Base :</div>
+                            <div class="h3 mb-0 font-weight-bold text-dark">{{ total_meubles.value }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 border-left-success flex-grow-1" style="border-left: 5px solid #1cc88a;">
+                <div class="card-body d-flex align-items-center">
+                    <div class="row no-gutters align-items-center w-100">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1" style="letter-spacing: 1px;">Nombre de Variantes Actives :</div>
+                            <div class="h3 mb-0 font-weight-bold text-dark">{{ total_decli.value }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 border-left-warning flex-grow-1" style="border-left: 5px solid #f6c23e;">
+                <div class="card-body d-flex align-items-center">
+                    <div class="row no-gutters align-items-center w-100">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1" style="letter-spacing: 1px;">Valeur Totale du Stock</div>
+                            <div class="h3 mb-0 font-weight-bold text-dark">{{ "{:,.2f}".format(couts_decli | sum) }} €</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 h-100">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h3 class="text-primary m-0 font-weight-bold">Répartition des Modèles par Catégorie</h3>
+                </div>
+                <div class="card-body d-flex justify-content-center align-items-center">
+                    <div style="width: 100%; height: 250px;">
+                        <canvas id="chartModeles"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h3 class="mt-5 mb-4 text-dark font-weight-bold">Détails par Variantes (Déclinaisons)</h3>
+    
+    <div class="row">
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white py-3 border-bottom">
+                    <h4 class="m-0 font-weight-bold">Nombre d'articles en stock par Déclinaison</h4>
+                </div>
+                <div class="card-body p-0">
+                    <div style="overflow-x: auto; overflow-y: hidden; padding: 20px;">
+                        <div style="width: {{ labels_decli|length * 40 }}px; min-width: 100%; height: 350px;">
+                            <canvas id="chartQteDecli"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-12 mb-4">
+            <div class="card shadow-sm border-0">
+                <div class="card-header bg-dark text-white py-3 border-bottom">
+                    <h4 class="m-0 font-weight-bold">Coût du stock par Déclinaison</h4>
+                </div>
+                <div class="card-body p-0">
+                    <div style="max-height: 500px; overflow-y: auto; padding: 20px;">
+                        <div style="height: {{ labels_decli|length * 35 }}px; min-height: 300px;">
+                            <canvas id="chartCoutDecli"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ super() }}
+    
+    <script>
+    Chart.defaults.global.defaultFontFamily = 'Nunito, -apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
+    Chart.defaults.global.defaultFontColor = '#858796';
+
+    var pieColors = ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69'];
+
+    var ctxModeles = document.getElementById("chartModeles").getContext("2d");
+    new Chart(ctxModeles, {
+        type: "pie",
+        data: {
+            labels: {{ labels | safe }},
+            datasets: [{
+                data: {{ values_meubles | safe }},
+                backgroundColor: pieColors,
+                hoverBorderColor: "rgba(234, 236, 244, 1)",
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: { 
+                position: 'right',
+                labels: { boxWidth: 15 }
+            }
+        }
+    });
+
+    var ctxQteDecli = document.getElementById("chartQteDecli").getContext("2d");
+    new Chart(ctxQteDecli, {
+        type: "bar",
+        data: {
+            labels: {{ labels_decli | safe }},
+            datasets: [{
+                label: "Quantité en stock",
+                data: {{ qtes_decli | safe }},
+                backgroundColor: "rgba(54, 185, 204, 0.8)",
+                hoverBackgroundColor: "rgba(54, 185, 204, 1)",
+                borderColor: "#36b9cc",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false, 
+            legend: { display: false },
+            scales: {
+                xAxes: [{ 
+                    ticks: { 
+                        autoSkip: false,
+                        maxRotation: 90,
+                        minRotation: 45
+                    } 
+                }],
+                yAxes: [{ ticks: { beginAtZero: true } }]
+            }
+        }
+    });
+
+    var ctxCoutDecli = document.getElementById("chartCoutDecli").getContext("2d");
+    new Chart(ctxCoutDecli, {
+        type: "horizontalBar",
+        data: {
+            labels: {{ labels_decli | safe }},
+            datasets: [{
+                label: "Valeur du stock (€)",
+                data: {{ couts_decli | safe }},
+                backgroundColor: "rgba(246, 194, 62, 0.8)",
+                hoverBackgroundColor: "rgba(246, 194, 62, 1)",
+                borderColor: "#f6c23e",
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            legend: { display: false },
+            scales: {
+                xAxes: [{ 
+                    ticks: { 
+                        beginAtZero: true,
+                        callback: function(value) { return value + ' €'; }
+                    } 
+                }]
+            },
+            tooltips: {
+                callbacks: {
+                    label: function(tooltipItem) { return tooltipItem.xLabel.toLocaleString() + ' €'; }
+                }
+            }
+        }
+    });
+    </script>
+{% endblock %}

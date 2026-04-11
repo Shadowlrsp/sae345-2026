@@ -1,0 +1,37 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm py-3 mb-4">
+    <div class="container-fluid">
+        <a class="navbar-brand font-weight-bold text-primary" href="/">
+            SAE BDD 2026
+        </a>
+
+        <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto"></ul>
+
+            <div class="d-flex align-items-center mt-3 mt-lg-0">
+                <a class="btn btn-outline-primary rounded-pill px-4 mx-1 font-weight-bold" href="/login">
+                    Connexion
+                </a>
+                <a class="btn btn-primary rounded-pill px-4 mx-1 font-weight-bold shadow-sm" href="/signup">
+                    Inscription
+                </a>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<div class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert {{ category }} shadow-sm border-0 text-center font-weight-bold">
+        {{ message }}
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+</div>
