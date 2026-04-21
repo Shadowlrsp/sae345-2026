@@ -412,3 +412,42 @@ ADD COLUMN adresse_facturation_id INT;
 ALTER TABLE commande
 ADD CONSTRAINT fk_cmd_adr_liv FOREIGN KEY (adresse_livraison_id) REFERENCES adresse(id_adresse),
 ADD CONSTRAINT fk_cmd_adr_fac FOREIGN KEY (adresse_facturation_id) REFERENCES adresse(id_adresse);
+
+SELECT
+    LEFT(a.code_postal, 2) AS dep,
+    COUNT(c.id_commande) AS nb_commandes,
+    SUM(lc.prix * lc.quantite) AS total_ca
+FROM commande c
+JOIN adresse a ON c.adresse_livraison_id = a.id_adresse
+JOIN ligne_commande lc ON c.id_commande = lc.commande_id
+GROUP BY dep
+ORDER BY total_ca DESC;
+
+SELECT
+    LEFT(a.code_postal, 2) AS dep,
+    COUNT(DISTINCT c.id_commande) AS nb_commandes,
+    SUM(lc.prix * lc.quantite) AS chiffre_affaire
+FROM commande c
+JOIN adresse a ON c.adresse_livraison_id = a.id_adresse
+JOIN ligne_commande lc ON lc.commande_id = c.id_commande
+GROUP BY dep
+ORDER BY dep;
+
+INSERT INTO adresse (utilisateur_id, nom, rue, code_postal, ville, valide, est_favorite) VALUES
+(2, 'Maison', '10 rue de Paris', '75001', 'Paris', 1, 1),
+(2, 'Travail', '20 rue Lyon', '69000', 'Lyon', 1, 0),
+(2, 'Domicile', '5 rue Nice', '06000', 'Nice', 1, 0),
+(2, 'Paris', '1 rue A', '75001', 'Paris', 1, 0),
+(3, 'Marseille', '3 rue C', '13000', 'Marseille', 1, 0),
+(3, 'Bordeaux', '4 rue D', '33000', 'Bordeaux', 1, 0);
+
+UPDATE commande SET adresse_livraison_id = 1, adresse_facturation_id = 1 WHERE utilisateur_id = 2;
+UPDATE commande SET adresse_livraison_id = 3, adresse_facturation_id = 3 WHERE utilisateur_id = 3;
+
+SELECT
+    LEFT(a.code_postal, 2) AS dep,
+    COUNT(DISTINCT c.id_commande) AS nombre
+FROM commande c
+JOIN adresse a ON c.adresse_livraison_id = a.id_adresse
+WHERE c.adresse_livraison_id IS NOT NULL
+GROUP BY dep;

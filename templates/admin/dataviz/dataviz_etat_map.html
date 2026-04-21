@@ -32,13 +32,8 @@
 
     <script>
     {% for element in adresses %}
-        document.getElementById({{ element['dep'] }}).style.fill= "#000000";
-        document.getElementById({{ element['dep'] }}).setAttribute("fill-opacity", {{ element['indice'] }});
+        document.getElementById("{{ element['dep'] }}").style.fill = "#000000";
+        document.getElementById("{{ element['dep'] }}").setAttribute("fill-opacity", {{ element['indice'] }});
     {% endfor %}
     </script>
-
-{#    /* couleur avec transparence */#}
-{#background-color : rgba(255,255,255,0.5);#}
-{#    https://web-color.aliasdmc.fr/couleur-web-white-avec-transparence.html#}
-
 {% endblock %}
