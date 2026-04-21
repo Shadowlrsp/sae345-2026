@@ -142,7 +142,7 @@
     <form method="GET" action="">
         <label for="categorieSelect"><strong>Choisir une catégorie :</strong></label>
         <select id="categorieSelect" name="categorie" onchange="this.form.submit()">
-            <option value="">-- Sélectionner --</option>
+            <option value="">Selectioner</option>
             {% for cat in toutes_categories %}
                 <option value="{{ cat.id_type_meuble }}"
                     {% if selected_cat and selected_cat|int == cat.id_type_meuble %}selected{% endif %}>

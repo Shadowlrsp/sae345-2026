@@ -11,9 +11,7 @@ admin_dataviz = Blueprint('admin_dataviz', __name__,
 @admin_dataviz.route('/admin/dataviz/etat1')
 def show_type_article_stock():
     mycursor = get_db().cursor()
-
-    # wishlist / categorie
-    #
+    # wishlist par categorie
     sql = '''
           SELECT type_meuble.id_type_meuble      AS id_type_article,
                  type_meuble.libelle_type_meuble AS libelle,

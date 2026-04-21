@@ -39,7 +39,7 @@ def client_liste_envies_delete():
     get_db().commit()
 
     # TODO : De base ct /client/envies/show mais c vrmnt pas logique
-    return redirect('/client/article/show')
+    return client_liste_envies_show()
 
 @client_liste_envies.route('/client/envies/show', methods=['get'])
 def client_liste_envies_show():
